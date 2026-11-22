@@ -1,0 +1,95 @@
+@page {
+  size: A4;
+  margin: 16mm;
+}
+@media print {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .char {
+    opacity: 1 !important;
+  }
+  body {
+    background: #fff !important;
+    color: #172b26;
+    font-size: 11pt;
+  }
+  .site-header,
+  .site-footer,
+  .bottom-nav,
+  .stepper,
+  .manager-sidebar,
+  .save-status,
+  .no-print,
+  .page-heading,
+  .skip-link,
+  .tab-indicator,
+  .topography-backdrop {
+    display: none !important;
+  }
+  .landing-shell,
+  .manager-shell {
+    border: 0;
+    padding: 0;
+  }
+  .page-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none;
+  }
+  .surface,
+  .print-document {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+  }
+  .export-panel > .print-document {
+    display: block;
+  }
+  .export-panel > h2 {
+    display: none;
+  }
+  .print-document h2 {
+    font-size: 18pt;
+  }
+  .print-document h3 {
+    font-size: 14pt;
+    break-after: avoid;
+  }
+  .print-document table {
+    font-size: 10pt;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .print-document td,
+  .print-document th {
+    font-size: 10pt;
+    overflow-wrap: anywhere;
+    border-color: #888;
+  }
+  .print-document tr {
+    break-inside: avoid;
+  }
+  .print-document p {
+    white-space: pre-wrap;
+  }
+  .table-scroll {
+    overflow: visible;
+  }
+  .notice {
+    display: none;
+  }
+  .print-document {
+    color: #172b26;
+    background: #fff;
+  }
+  a {
+    color: #172b26;
+  }
+}

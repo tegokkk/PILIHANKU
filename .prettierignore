@@ -1,0 +1,8 @@
+node_modules
+dist
+.local
+output
+tmp
+stitch_pilihanku_career_platform_ui
+assets
+package-lock.json

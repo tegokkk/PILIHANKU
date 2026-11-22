@@ -1,0 +1,10 @@
+# Aset dan referensi
+
+- Semua 16 `code.html` Stitch tetap berada di lokasi asal. Pasangan desktop/mobile untuk L01–L08 mengikuti tabel pada TASKLIST. Tidak ada HTML yang ditanam melalui `dangerouslySetInnerHTML`.
+- Token `#F5F4EF`, `#0F5B5B`, `#092C22`, `#477B75`, `#E9B949`, radius/pil, komposisi editorial hijau dan shell terang berasal dari `design.md` serta HTML Stitch.
+- Font Manrope disajikan lokal melalui `@fontsource/manrope`; lisensi SIL Open Font License terdapat dalam paket npm. Ikon Lucide berasal dari `lucide-react` (lisensi ISC pada paket). Wordmark/tunas sederhana dibuat sebagai kode SVG, tanpa memakai logo sekolah/toko.
+- URL hero `lh3.googleusercontent.com` di HTML sumber mengalihkan unduhan ke halaman login Google sehingga tidak dipakai sebagai aset aplikasi. Penggantinya adalah foto **Green leaves in dark room**, Nithin P John, [halaman Unsplash](https://unsplash.com/photos/green-leaves-in-dark-room-JiNJ7I997WE), di bawah [Unsplash License](https://unsplash.com/license). Salinan lokal WebP 1.600 px sekitar 116 KB, di `frontend/public/images/hero-leaves.webp`. Sumber HTML tetap utuh. Tidak ada ketergantungan runtime pada Google/Unsplash atau pelacak pihak ketiga.
+- `assets/design/reference-01.png` tetap merupakan referensi pengguna dan tidak diterbitkan sebagai halaman produk.
+- Refleksi, skenario, dan kartu contoh adalah materi rancangan asli untuk pengembangan, diberi label belum ditelaah/belum diverifikasi. Bukan instrumen psikologis berlisensi atau sumber resmi penerimaan/biaya.
+
+Dokumentasi stack yang diperiksa saat pemilihan dependensi: [Vite](https://vite.dev/guide/), [Tailwind Vite](https://tailwindcss.com/docs/installation/using-vite), [React Router](https://reactrouter.com/start/declarative/installation), [Express session](https://expressjs.com/en/resources/middleware/session/), [Knex migrations](https://knexjs.org/guide/migrations.html), dan [node-argon2](https://github.com/ranisalt/node-argon2). Versi aktual ada pada lockfile, bukan diambil dari angka contoh dokumen.

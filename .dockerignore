@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/.local
+**/.env
+**/.env.*
+!**/.env.example
+output
+tmp
+.git
+assets
+stitch_pilihanku_career_platform_ui
+*.pdf
