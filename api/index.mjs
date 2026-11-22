@@ -8,7 +8,7 @@ let appPromise;
 
 async function initApp() {
   const env = { ...readEnv(process.env), serverless: true };
-  const db = createDatabase(env.databaseUrl, { max: 3 });
+  const db = createDatabase(env.databaseUrl, { max: 3, serverless: true });
   try {
     await checkDatabaseSchema(db);
     await checkProductionStartup(db, env);
@@ -33,7 +33,9 @@ export default async function handler(req, res) {
     console.error(
       JSON.stringify({
         event: 'vercel_startup_failed',
-        code: err?.code === 'MIGRATION_REQUIRED' ? 'MIGRATION_REQUIRED' : 'STARTUP_FAILED',
+        code:
+          err?.code === 'MIGRATION_REQUIRED' ? 'MIGRATION_REQUIRED' : err?.code || 'STARTUP_FAILED',
+        reason: String(err?.message || 'unknown').slice(0, 200),
       })
     );
     res.setHeader('Cache-Control', 'no-store');

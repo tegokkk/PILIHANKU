@@ -114,7 +114,7 @@ export function createApp(db, env) {
     conObject: {
       connectionString: env.databaseUrl,
       connectionTimeoutMillis: 5000,
-      statement_timeout: 15000,
+      ...(env.serverless ? {} : { statement_timeout: 15000 }),
       query_timeout: 15000,
       max: env.serverless ? 2 : 5,
     },
