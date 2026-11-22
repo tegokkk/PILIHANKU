@@ -27,7 +27,7 @@ try {
       id: schoolId,
       name: input.school,
       timezone: input.timezone,
-      is_demo: env.demo,
+      is_demo: false,
     });
     await trx('users').insert({
       id,
