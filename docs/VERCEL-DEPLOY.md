@@ -40,7 +40,6 @@ Buat akun Superadmin pertama (hanya 1 kali):
 ```powershell
 $env:BOOTSTRAP_USERNAME="admin.sekolah"
 $env:BOOTSTRAP_PASSWORD="GantiPasswordKuatMin12Karakter!"
-$env:BOOTSTRAP_SCHOOL_NAME="SMA Negeri Contoh"
 $env:BOOTSTRAP_TIMEZONE="Asia/Jakarta"
 npm run bootstrap
 ```

@@ -12,7 +12,7 @@ try {
     .parse({
       username: process.env.BOOTSTRAP_USERNAME,
       password: process.env.BOOTSTRAP_PASSWORD,
-      school: process.env.BOOTSTRAP_SCHOOL_NAME,
+      school: process.env.BOOTSTRAP_SCHOOL_NAME || 'PILIHANKU',
       timezone: process.env.BOOTSTRAP_TIMEZONE || 'Asia/Jakarta',
     });
   new Intl.DateTimeFormat('id', { timeZone: input.timezone });
