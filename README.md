@@ -1,29 +1,218 @@
-# PILIHANKU
+<p align="center">
+  <img src="./docs/screenshots/beranda-2026-11-22.png" alt="Beranda PILIHANKU dengan navigasi membulat, latar topografi, dan hero hijau bertema pertumbuhan" width="100%" />
+</p>
 
-Aplikasi eksplorasi karier siswa XI–XII dengan delapan layout React, API Express, PostgreSQL/Knex, serta sesi server. Referensi Stitch asli berada di `stitch_pilihanku_career_platform_ui/` dan tidak diubah.
+<h1 align="center">PILIHANKU</h1>
 
-Implementasi lokal tersedia. **Belum merupakan rilis sekolah yang tervalidasi**: naskah refleksi/simulasi masih draf, katalog demo berisi 10 contoh, dan belum ada 40 kartu terverifikasi, telaah ahli, persetujuan sekolah/wali, SUS, atau deployment produksi. Lihat [TASKLIST](TASKLIST.md), [laporan verifikasi](docs/VERIFICATION.md), dan [daftar aset](docs/ASSETS.md).
+<p align="center">
+  <strong>Kenali diri. Jelajahi pilihan. Rancang masa depan.</strong><br />
+  Platform eksplorasi karier untuk siswa SMA kelas XI–XII,<br />
+  dengan perencanaan langkah, musyawarah keluarga, dan pendampingan Guru BK.
+</p>
 
-Hasil terbaru: [remediasi production dan batas verifikasinya](docs/REMEDIATION-2026-11-22.md). Temuan kode lokal sudah ditangani; backend 41/41, frontend 13/13, backup/restore PostgreSQL serta outage/restart lulus, p95 katalog lokal terburuk 1.166 ms. Validasi sekolah/ahli, katalog resmi, uji pengguna/perangkat sasaran dan pemeriksaan hosting manual masih terbuka. Riwayat temuan tersedia pada [audit awal](docs/PRODUCTION-AUDIT-2026-11-22.md). Startup memeriksa kelengkapan migration; production menolak sekolah demo, DEMO_CONTENT=true, dan kredensial bootstrap yang tertinggal. Counter pembatasan request disimpan bersama di PostgreSQL.
+<p align="center">
+  <a href="#menjalankan-lokal">Jalankan Lokal</a> ·
+  <a href="./docs/VERCEL-DEPLOY.md">Panduan Deploy</a> ·
+  <a href="./docs/LOGIN-ACCESS.md">Alur Akses Akun</a> ·
+  <a href="./docs/OPERASIONAL.md">Runbook Operator</a>
+</p>
 
-Tindak lanjut 22 November 2026: migration `005_rate_limits` sudah diterapkan pada database development lokal `pilihanku` untuk memperbaiki error 500 `/api/auth/me`. Jumlah baris akun dan data domain sebelum/sesudah tetap sama. Health, pemeriksaan sesi, dan persiapan CSRF kembali 200; database production tidak disentuh. Pada instalasi lain, tetap jalankan `npm run migrate` sebelum memakai versi baru.
+<p align="center">
+  <img src="https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript&amp;logoColor=171717" alt="JavaScript ES Modules" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&amp;logoColor=20232A" alt="React 19" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&amp;logoColor=white" alt="Vite 8" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS 4" />
+  <img src="https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&amp;logoColor=white" alt="Node.js 24" />
+  <img src="https://img.shields.io/badge/Express-5-172B26?logo=express&amp;logoColor=white" alt="Express 5" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&amp;logoColor=white" alt="PostgreSQL" />
+</p>
 
-## Akses wajib login (22 November 2026)
+> **Status proyek:** aplikasi lokal sudah diimplementasikan. Penggunaan oleh sekolah masih membutuhkan konten terverifikasi, telaah ahli, persetujuan yang diperlukan, uji pengguna, serta verifikasi lingkungan produksi. Lihat [status dan batas verifikasi](#status-dan-batas-verifikasi).
 
-Seluruh fitur membutuhkan sesi server dengan akun **approved**. Ketentuan ini menggantikan persyaratan Mode Tamu dalam dokumen rancangan awal. Beranda pengenalan tetap terbuka untuk umum. Siswa perlu login dengan akun approved untuk menjalankan fitur. Sebelum masuk, proses Masuk, Daftar Siswa, pemeriksaan status dengan username/password, dan informasi privasi juga tersedia. Halaman fitur, ekspor termasuk lembar kosong, simulasi, dan API dilindungi. API fitur mengembalikan 401 tanpa sesi dan 403 untuk role yang tidak berwenang. Akun pending/rejected/suspended tidak dapat masuk.
+---
 
-Siswa diarahkan ke Kenali Diriku; BK dan superadmin ke dashboard sesuai role. Logout/kedaluwarsa membongkar tampilan privat, membatalkan permintaan, membersihkan draf konsultasi sesi, serta menolak respons terlambat. Pemeriksaan sesi pasif tidak memperpanjang waktu idle. Jika logout terputus jaringan, akses tetap terkunci sampai pencabutan sesi dapat dicoba kembali. Draf tamu lama tidak dibaca atau diunggah. Lihat [rincian pengujian akses](docs/LOGIN-ACCESS.md).
+## Navigasi Dokumentasi
 
-## Prasyarat
+1. [Tentang PILIHANKU](#tentang-pilihanku)
+2. [Kemampuan Aplikasi](#kemampuan-aplikasi)
+3. [Teknologi yang Digunakan](#teknologi-yang-digunakan)
+4. [Alur Penggunaan dan Sistem](#alur-penggunaan-dan-sistem)
+5. [Susunan Proyek](#susunan-proyek)
+6. [Menjalankan Lokal](#menjalankan-lokal)
+7. [Konfigurasi Environment](#konfigurasi-environment)
+8. [Perintah Pengembangan](#perintah-pengembangan)
+9. [Perlindungan Data dan Akses](#perlindungan-data-dan-akses)
+10. [Deployment dan Pemeliharaan](#deployment-dan-pemeliharaan)
+11. [Status dan Batas Verifikasi](#status-dan-batas-verifikasi)
+12. [Dokumen Pendukung](#dokumen-pendukung)
 
-- Node.js LTS 24 (diuji dengan 24.21.0); gunakan LTS 24 sesuai engine proyek dan `.nvmrc`.
-- npm; gunakan `npm ci` agar mengikuti lockfile masing-masing aplikasi.
-- PostgreSQL. Alternatif development: `npm run db:local` menjalankan PostgreSQL sungguhan dari paket `embedded-postgres`, bukan database tiruan. Helper ini hanya untuk development dan memakai loopback `127.0.0.1:55432`.
-- Tidak membutuhkan akun layanan cloud untuk menjalankan aplikasi lokal.
+---
 
-## Setup lokal yang cepat
+## Tentang PILIHANKU
 
-Terminal database:
+**PILIHANKU** membantu siswa mengenali minat, memahami berbagai jalur setelah SMA, menimbang pilihan, dan menyusun tindakan yang dapat dibawa ke diskusi keluarga atau konsultasi Guru BK.
+
+Pengalaman siswa disusun dalam empat langkah:
+
+| Langkah | Pertanyaan utama | Hasil yang disiapkan |
+| --- | --- | --- |
+| **01 · Kenali Diriku** | Apa minat dan hal yang penting bagiku? | Refleksi minat RIASEC, nilai pribadi, serta dukungan dan hambatan |
+| **02 · Peta Jalur** | Jalur apa saja yang dapat aku jelajahi? | Informasi jalur dan simulasi alternatif |
+| **03 · Timbang Pilihan** | Bagaimana membandingkan beberapa opsi? | Matriks pertimbangan berbobot dan lembar musyawarah |
+| **04 · Rencana Langkahku** | Apa yang bisa aku lakukan berikutnya? | Pilihan sementara, tugas bertenggat, dan ringkasan PDF |
+
+Empat kelompok jalur disajikan setara: **Kuliah**, **Vokasi & Kedinasan**, **Kerja & Pelatihan**, serta **Wirausaha**. Siswa dapat kembali dan merevisi langkah tanpa harus menyelesaikannya secara berurutan.
+
+Identitas visual memakai hijau gelap, latar putih hangat dengan motif topografi, aksen kuning, tipografi Manrope, navigasi pil, dan kartu membulat. Tampilan desktop/mobile berangkat dari ekspor Stitch; kode referensi asli dipertahankan pada folder sumber lokal.
+
+> Hasil di PILIHANKU adalah bahan refleksi. Aplikasi tidak memberikan diagnosis, peringkat siswa, atau keputusan jurusan dan pekerjaan secara otomatis.
+
+## Kemampuan Aplikasi
+
+### Eksplorasi siswa
+
+- **Refleksi 24 pernyataan:** enam dimensi RIASEC dengan skor mentah, penanganan skor seri, serta bagian nilai dan kondisi yang opsional.
+- **Peta jalur interaktif:** pencarian, filter kategori/minat, pagination, sumber informasi, tanggal verifikasi, dan detail dalam panel.
+- **Lima tema simulasi:** tidak lolos jalur prestasi, keterbatasan biaya, kerja sambil kuliah, perbedaan pilihan keluarga, dan merintis usaha.
+- **Perbandingan 2–3 opsi:** bobot kriteria 1–3 dan penilaian 1–4. Total ditahan saat data belum lengkap; siswa tetap menentukan pilihannya sendiri.
+- **Musyawarah keluarga:** mencatat alasan, kesepakatan, perbedaan pandangan, dan dukungan yang dibutuhkan.
+- **Rencana tindakan:** tambah, ubah, centang, dan hapus tugas beserta tenggat; pilihan utama/cadangan dapat direvisi.
+- **Ekspor terpilih:** pratinjau cakupan, PDF multipage, dan cetak dengan bagian pribadi yang dipilih siswa.
+
+### Akun dan dashboard sesuai peran
+
+| Role | Fokus pekerjaan | Batas akses |
+| --- | --- | --- |
+| **Superadmin** | Meninjau dan menyetujui/menolak pendaftaran siswa, mengelola akun BK, kelas, penugasan, dan informasi layanan | Administrasi akun tidak membuka seluruh refleksi atau konsultasi privat |
+| **BK** | Menindaklanjuti konsultasi, menetapkan jadwal, melihat agregat aman, dan memperbarui bank informasi | Hanya kelas berwenang serta bagian yang sengaja dibagikan siswa; tidak dapat menyetujui pendaftaran |
+| **Siswa** | Mengisi refleksi, menjelajahi jalur, membandingkan, menyusun rencana, dan meminta konsultasi | Akun harus `approved`; data pribadi hanya milik sendiri |
+
+Pendaftaran publik selalu menghasilkan **`siswa/pending`**. Hanya superadmin dapat menyetujui atau menolak. Akun BK dibuat superadmin; tidak ada pendaftaran umum untuk BK atau superadmin.
+
+### Konsultasi dan pengelolaan informasi
+
+Tanya BK tersedia melalui panel global, termasuk sebelum siswa mengisi rencana. Siswa memilih bagian yang akan dibagikan, meninjau penerima dan pesan, lalu mengirim permintaan. Seluruh pilihan berbagi awalnya kosong.
+
+BK meninjau permintaan dan menentukan jadwal dengan zona waktu sekolah. Siswa dapat memantau status, membatalkan permintaan aktif, atau menarik bagian yang dibagikan. **Preferensi waktu bukan konfirmasi jadwal**, dan formulir ini bukan live chat atau layanan darurat.
+
+Bank informasi mendukung draf, pratinjau, pemeriksaan sumber, penerbitan, pelaporan tautan, dan arsip. Sumber HTTPS, tanggal verifikasi, serta konfirmasi pemeriksa dibutuhkan untuk menerbitkan kartu; pemeriksaan isi tetap menjadi tanggung jawab manusia.
+
+## Teknologi yang Digunakan
+
+| Bagian | Teknologi | Fungsi |
+| --- | --- | --- |
+| Bahasa | JavaScript ES Modules / JSX | Kode frontend dan backend |
+| Frontend | React 19, Vite 8, React Router 7 | Delapan layout responsif, navigasi, dan panel |
+| Styling | Tailwind CSS 4, CSS variables, Manrope | Sistem visual dan komponen bersama |
+| Ikon dan animasi | Lucide React, GSAP, Motion | Ikon, transisi, dan interaksi visual |
+| API | Node.js 24, Express 5, Zod | Routing, validasi, dan aturan layanan |
+| Database | PostgreSQL, Knex 3, `pg` | Migration, constraint, query, dan transaksi |
+| Autentikasi | `express-session`, `connect-pg-simple`, Argon2id | Sesi server-side dan hash password |
+| Proteksi HTTP | Helmet, CSRF/Origin, rate limit PostgreSQL | Header keamanan dan pembatasan request |
+| Dokumen | jsPDF, jsPDF-AutoTable | Ringkasan PDF yang diproses di browser |
+| Pengujian | Node test runner, Supertest, ESLint | Pengujian domain/API serta pemeriksaan kode |
+
+Versi paket persis mengikuti `package-lock.json` pada masing-masing aplikasi. Gunakan Node.js **24.x**, sesuai `engines` di kedua `package.json` dan `.nvmrc`.
+
+## Alur Penggunaan dan Sistem
+
+### Dari pendaftaran sampai eksplorasi
+
+```mermaid
+flowchart TD
+    A[Beranda publik] --> B[Daftar Siswa]
+    B --> C[Akun pending]
+    C --> D{Keputusan superadmin}
+    D -->|Disetujui| E[Login akun approved]
+    D -->|Ditolak| F[Status dan alasan milik pemohon]
+    E --> G[Kenali Diriku]
+    G --> H[Peta Jalur dan simulasi]
+    H --> I[Timbang Pilihan dan musyawarah]
+    I --> J[Rencana Langkahku]
+    J --> K[Unduh ringkasan PDF]
+    J --> L[Ajukan konsultasi secara opsional]
+    L --> M[BK meninjau dan menetapkan jadwal]
+```
+
+Diagram menunjukkan urutan panduan; empat langkah tetap dapat dibuka bebas. Konsultasi tidak mensyaratkan rencana lengkap. Status pengiriman, penyimpanan, dan persetujuan berasal dari hasil server, bukan perubahan tampilan semata.
+
+### Pemisahan frontend, backend, dan data
+
+```mermaid
+flowchart LR
+    U[Browser siswa atau pengelola] --> F[React dan Vite]
+    F -->|REST API dan cookie sesi| A[Express dan validasi akses]
+    A -->|Knex dan pg| D[(PostgreSQL)]
+    D --- S[Sesi, akun, kelas, eksplorasi dan konsultasi]
+    F --> P[PDF di browser]
+    W[Worker retensi dan ledger] --> D
+    O[Operator backup dan restore] --> D
+```
+
+**Akses saat ini:** beranda, Masuk, Daftar Siswa, pemeriksaan status dengan verifikasi kredensial, dan informasi privasi tersedia tanpa sesi. **Seluruh fitur aplikasi membutuhkan login akun approved.** Mode Tamu, impor draf tamu, konsultasi token tamu, serta ekspor tanpa sesi pada rancangan awal sudah dinonaktifkan. Rincian dan riwayat perubahan ada pada [LOGIN-ACCESS](docs/LOGIN-ACCESS.md).
+
+## Susunan Proyek
+
+```text
+PILIHANKU/
+|-- backend/
+|   |-- src/
+|   |   |-- config/                 # Environment, database, guard produksi
+|   |   |-- database/migrations/    # Schema dan indeks berversi
+|   |   |-- middleware/             # Sesi, role, CSRF, validasi, rate limit
+|   |   |-- modules/                # Auth, approval, kelas, eksplorasi, konten, BK
+|   |   |-- operations/             # Health, ledger, backup dan lifecycle
+|   |   |-- jobs/                   # Retensi dan penghapusan
+|   |   |-- scripts/                # Bootstrap, database lokal, worker, operasi
+|   |   |-- app.js
+|   |   `-- server.js
+|   |-- tests/
+|   |-- .env.example
+|   `-- package.json
+|-- frontend/
+|   |-- public/                    # Aset publik, manifest dan service worker
+|   |-- src/
+|   |   |-- pages/                 # Delapan layout utama L01-L08
+|   |   |-- components/            # UI dan navigasi bersama
+|   |   |-- context/               # Sesi dan eksplorasi akun
+|   |   |-- features/              # Konsultasi, ekspor dan privasi
+|   |   |-- exports/               # Generasi PDF
+|   |   |-- services/              # Fetch API, CSRF dan invalidasi respons
+|   |   |-- styles/                # Token, tampilan, dan cetak
+|   |   `-- data/                  # Materi berversi
+|   |-- tests/
+|   |-- vite.config.js
+|   `-- package.json
+|-- api/index.mjs                  # Adapter Express untuk konfigurasi serverless
+|-- deploy/nginx.conf.example      # Contoh reverse proxy
+|-- docs/                          # Panduan, laporan dan screenshot
+|-- Dockerfile
+|-- vercel.json
+|-- PRD.md
+|-- design.md
+|-- structure.md
+|-- TASKLIST.md
+`-- README.md
+```
+
+Sumber UI Stitch tersedia pada workspace lokal di `stitch_pilihanku_career_platform_ui/` dan diabaikan oleh Git. Folder `.local/`, `.env`, `tmp/`, dan `output/` juga tidak dipublikasikan. Screenshot README disimpan tersendiri di `docs/screenshots/`.
+
+## Menjalankan Lokal
+
+### Prasyarat
+
+- **Node.js 24.x** dan npm.
+- **PostgreSQL**, atau gunakan helper database lokal yang tersedia.
+- Tiga terminal bila memakai helper database, backend, dan frontend secara bersamaan.
+
+```powershell
+git clone https://github.com/tegokkk/PILIHANKU.git
+cd PILIHANKU
+```
+
+### 1. Jalankan database development
+
+Dari root proyek, pada terminal pertama:
 
 ```powershell
 cd backend
@@ -31,21 +220,32 @@ npm ci
 npm run db:local
 ```
 
-Helper membuat database `pilihanku` dan `pilihanku_test`, kredensial acak di `backend/.local/`, dan `.env` lokal bila belum ada. Ia tidak menimpa `.env` yang sudah ada. Jangan menutup terminal ini selama memakai database lokal.
+Helper menjalankan PostgreSQL sungguhan melalui `embedded-postgres` pada `127.0.0.1:55432`, menyiapkan `pilihanku` dan `pilihanku_test`, serta membuat kredensial acak di `backend/.local/`. Jika `.env` belum ada, helper membuat konfigurasi development beserta kredensial bootstrap acak; `.env` yang sudah tersedia tidak ditimpa.
 
-Terminal backend, setelah database siap:
+Biarkan terminal database berjalan. Helper hanya untuk development, bukan penyimpanan atau backup produksi.
+
+### 2. Siapkan dan jalankan backend
+
+Buka terminal baru dari root proyek:
 
 ```powershell
 cd backend
 npm run migrate
 npm run bootstrap
-npm run seed:demo
 npm run dev
 ```
 
-Bootstrap hanya boleh dijalankan sekali pada database awal. Username lokal diatur oleh `BOOTSTRAP_USERNAME`; password lokal dihasilkan acak oleh helper dan tersimpan hanya di `.env` yang diabaikan Git. Jangan membagikan `.env`. Setelah akses diserahkan dengan aman, hapus variabel bootstrap dari environment operasional. Seed demo hanya membuat kelas/kode konteks; tidak membuat password siswa/BK tetap. Kode demo disimpan pada `backend/.local/demo-class.json`.
+`bootstrap` hanya untuk database awal yang belum mempunyai superadmin. Untuk workspace yang sudah diinisialisasi, jalankan migration bila diperlukan dan lewati bootstrap; skrip menolak pembuatan admin awal kedua.
 
-Terminal frontend:
+Kredensial lokal mengikuti `BOOTSTRAP_USERNAME` dan `BOOTSTRAP_PASSWORD` di `.env` lokal. Baca melalui editor pribadi dan serahkan melalui saluran aman; jangan membagikan `.env` atau memasukkan nilainya ke repository. Setelah handoff, hapus kredensial bootstrap dari environment operasional.
+
+Login sebagai superadmin untuk membuat kelas, memperoleh kode pendaftaran, membuat akun BK, dan menentukan penugasannya. Kontak serta jam layanan perlu diatur sebelum konsultasi menerima pengiriman.
+
+`seed:demo` bukan bagian setup awal standar: skrip tersebut mensyaratkan sekolah bertanda demo. Bootstrap saat ini membuat sekolah non-demo. Untuk data awal biasa, gunakan pengelolaan kelas di aplikasi; jangan menjalankan fixture/seed demo pada database produksi.
+
+### 3. Jalankan frontend
+
+Buka terminal baru dari root proyek:
 
 ```powershell
 cd frontend
@@ -53,125 +253,187 @@ npm ci
 npm run dev
 ```
 
-Buka **http://localhost:5173**. API berada di http://localhost:3001/api/health. Proxy Vite meneruskan `/api` ke Express; Origin harus sama persis dengan `APP_ORIGIN`. Jika port/hostname berubah, sesuaikan environment dan mulai ulang backend.
+| Layanan lokal | Alamat |
+| --- | --- |
+| Website | [http://localhost:5173](http://localhost:5173) |
+| Readiness API dan database | [http://localhost:3001/api/health](http://localhost:3001/api/health) |
+| Liveness proses | [http://localhost:3001/api/health/live](http://localhost:3001/api/health/live) |
 
-Untuk workspace yang sudah disiapkan pada pekerjaan ini, migration dan bootstrap lokal telah dijalankan; cukup jalankan database serta kedua dev server. Bootstrap berikutnya akan ditolak jika superadmin sudah ada.
+Proxy Vite meneruskan `/api` ke `127.0.0.1:3001`. Hostname, port frontend, dan `APP_ORIGIN` harus sesuai; perubahan origin memerlukan pembaruan konfigurasi dan restart backend.
 
-## PostgreSQL yang dikelola sendiri
+<details>
+<summary><strong>Alternatif: gunakan PostgreSQL yang dikelola sendiri</strong></summary>
 
-Salin `backend/.env.example` menjadi `backend/.env`. Buat database development dan database test **terpisah**, lalu isi URL koneksi yang diberikan operator. Isi `SESSION_SECRET` dengan setidaknya 32 karakter acak kriptografis. Tidak ada kredensial yang boleh menggunakan awalan `VITE_`.
-
-| Variabel                                      | Fungsi                                                                                              |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                | PostgreSQL aplikasi; hanya server                                                                   |
-| `TEST_DATABASE_URL`                           | Database disposable dengan nama berakhiran `_test`; pengujian menghapus isi database ini            |
-| `SESSION_SECRET`                              | Rahasia tanda tangan sesi, minimal 32 karakter acak                                                 |
-| `APP_ORIGIN`                                  | Origin frontend yang sah; HTTPS wajib pada produksi                                                 |
-| `PORT`                                        | Port Express, default 3001                                                                          |
-| `BIND_HOST`                                   | Default loopback; gunakan `0.0.0.0` hanya untuk container/jaringan deployment yang memang disiapkan |
-| `NODE_ENV`                                    | `development`, `test`, atau `production`                                                            |
-| `TRUST_PROXY`                                 | `1` hanya bila ada satu reverse proxy tepercaya; default `0`                                        |
-| `PENDING_RETENTION_DAYS`                      | 1–365 hari, default usulan 90; wajib ditetapkan sekolah sebelum produksi                            |
-| `LOG_REQUESTS`                                | Log request tersanitasi; aktif secara default pada production kecuali diset `false`                 |
-| `DELETION_LEDGER_PATH`                        | Path absolut ledger independen; wajib untuk worker production                                       |
-| `PG_BIN`, `BACKUP_KEY`                        | Client PostgreSQL dan kunci backup 32 byte acak base64; hanya server/operator                       |
-| `RESTORE_DATABASE_URL`                        | Database kosong terisolasi untuk pemulihan; bukan database aplikasi aktif                           |
-| `DEMO_CONTENT`                                | `true` hanya pada development; selalu nonaktif di produksi                                          |
-| `BOOTSTRAP_USERNAME`, `BOOTSTRAP_PASSWORD`    | Hanya untuk bootstrap pertama                                                                       |
-| `BOOTSTRAP_SCHOOL_NAME`, `BOOTSTRAP_TIMEZONE` | Nama dan zona waktu IANA sekolah awal                                                               |
-
-Frontend tidak memerlukan environment rahasia. Paket dikunci pada `backend/package-lock.json` dan `frontend/package-lock.json`.
-
-## Alur per role
-
-1. **Superadmin** masuk melalui L02. Di L08 buat kelas, rotasi kode bergabung, buat akun BK, dan tentukan penugasan kelas. Atur kontak/jam layanan serta zona waktu melalui tab Layanan. Layanan konsultasi tidak menerima kiriman sebelum informasi ini tersedia.
-2. **Siswa** mendaftar dengan kode kelas aktif. Akun selalu `siswa/pending`; role/status tambahan dalam payload ditolak. Superadmin meninjau L07, menyetujui atau menolak dengan alasan. Setelah approved, siswa masuk dan menyimpan miliknya sendiri.
-3. **BK** masuk dengan password awal yang diberikan melalui saluran aman, lalu wajib menggantinya. BK hanya melihat kelas yang ditugaskan, agregat aman, serta konsultasi yang ditujukan kepadanya. Superadmin tidak memperoleh akses rutin ke refleksi/konsultasi privat.
-4. **Tanpa sesi** dapat melihat beranda, mengurus akses akun, dan membaca privasi. Mode Tamu dan pemantauan konsultasi dengan token tamu dinonaktifkan. Penghapusan akun siswa tersedia setelah login melalui Pengaturan Data.
-
-Setelah login sebagai siswa, empat langkah dapat dipilih tanpa harus menyelesaikannya berurutan. Refleksi bukan diagnosis; skor RIASEC dihitung setelah 24 jawaban. Matriks menahan seluruh total saat belum lengkap dan tidak memilih pemenang. Rencana kurang dari tiga tugas tetap bisa disimpan/diunduh sebagai draf.
-
-## Konsultasi, konten, dan privasi
-
-- Tanya BK tersedia secara global pada panel L06, termasuk sebelum rencana diisi. Empat pilihan berbagi awalnya kosong. Tinjauan menampilkan penerima, pesan, dan bagian yang akan dikirim.
-- Salinan dibuat dari data akun siswa yang sudah disimpan dan bagian yang secara eksplisit dipilih. Retry dengan kunci operasi sama tidak membuat duplikasi. Pengirim dapat memantau, membatalkan permintaan aktif, menarik bagian, atau menghapus permintaan.
-- Konsultasi hanya menerima siswa approved pada kelasnya sendiri; kode kelas atau token tamu tidak memberikan akses.
-- Preferensi bukan jadwal. BK menetapkan tanggal/jam/tempat dengan zona waktu sekolah, mengikuti transisi Baru → Ditinjau → Dijadwalkan/Selesai, atau pembatalan.
-- Kartu draf tidak tampil di katalog. Terbit memerlukan sumber HTTPS, konfirmasi pemeriksaan guru, kelengkapan isi, dan tanggal verifikasi. Aplikasi memvalidasi kelengkapan; keabsahan substansi tetap memerlukan verifikator manusia. Laporan tautan/informasi lama masuk ke Bank Informasi BK.
-- Katalog memakai pagination dan filter server: OR antarminat, lalu AND dengan kategori/pencarian. Salinan opsi menyimpan versi; perubahan/arsip tidak menimpa pertimbangan lama.
-- Kontribusi agregat terpisah dari berbagi konsultasi. Server menutup seluruh vektor agregat bila nilai atau pelengkapnya dapat mengungkap kelompok 1–4. Tidak ada angka kecil tersembunyi dalam respons API/tooltip.
-- Password memakai Argon2id. Sesi berada di PostgreSQL, ID cookie HttpOnly, usia absolut 8 jam dan idle 30 menit. Reset/status/password/penugasan mencabut sesi lama. Mutasi memakai token CSRF dan pemeriksaan Origin; auth/konsultasi dibatasi lajunya.
-- Reset akses dilakukan superadmin setelah verifikasi sekolah, bukan lewat pencarian nama atau email yang diasumsikan tersedia. Password asli tidak dapat dibaca.
-- Service worker produksi hanya menyimpan shell/aset publik. `/api` tidak masuk cache. Verifikasi sesi dan fitur membutuhkan koneksi; shell luring tidak membuka eksplorasi privat.
-
-## Pengujian dan build
-
-Jalankan saat PostgreSQL test siap, secara berurutan:
+Pada instalasi baru, siapkan database aplikasi dan database test yang terpisah, lalu salin contoh konfigurasi:
 
 ```powershell
 cd backend
-npm run lint
-npm test
-# Opsional: mengisi ulang database test dengan 50 sesi dan 1.000 kartu sintetis
-node src/scripts/measure-pilot.js
+npm ci
+Copy-Item .env.example .env
 ```
 
+Isi `DATABASE_URL`, `TEST_DATABASE_URL`, `APP_ORIGIN`, dan rahasia sesi di `.env`. Nama database test harus berakhiran `_test`. Siapkan `BOOTSTRAP_USERNAME`, `BOOTSTRAP_PASSWORD`, nama sekolah dan zona waktu untuk bootstrap pertama. Jangan menimpa `.env` yang sudah dikonfigurasi.
+
+Untuk membuat rahasia sesi acak:
+
 ```powershell
-cd frontend
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
+
+Simpan hasilnya sebagai `SESSION_SECRET`, kemudian jalankan migration, bootstrap satu kali, dan backend seperti langkah di atas. Jangan menjalankan helper database bila sudah memakai PostgreSQL sendiri.
+
+</details>
+
+## Konfigurasi Environment
+
+Konfigurasi aplikasi berada di `backend/.env`. Frontend tidak memerlukan rahasia dan menggunakan `/api` pada origin yang sama. Lihat [contoh backend](backend/.env.example) dan [contoh frontend](frontend/.env.example).
+
+| Variabel | Penggunaan |
+| --- | --- |
+| `NODE_ENV` | `development`, `test`, atau `production` |
+| `PORT` | Port Express; default `3001` |
+| `BIND_HOST` | Default `127.0.0.1`; `0.0.0.0` untuk container yang dikonfigurasi |
+| `APP_ORIGIN` | Origin frontend persis; HTTPS pada produksi |
+| `DATABASE_URL` | Koneksi PostgreSQL aplikasi, hanya server |
+| `TEST_DATABASE_URL` | Database disposable terpisah dengan nama berakhiran `_test` |
+| `SESSION_SECRET` | Minimal 32 karakter acak; jangan memakai nilai placeholder |
+| `TRUST_PROXY` | Default `0`; `1` hanya dengan satu reverse proxy tepercaya sesuai deployment |
+| `PENDING_RETENTION_DAYS` | Batas pengajuan pending/rejected; 1–365 hari, default usulan `90` |
+| `DEMO_CONTENT` | Konten contoh development; `false` atau tidak aktif pada produksi |
+| `BOOTSTRAP_USERNAME`, `BOOTSTRAP_PASSWORD` | Hanya untuk admin awal; keluarkan dari runtime produksi |
+| `BOOTSTRAP_SCHOOL_NAME`, `BOOTSTRAP_TIMEZONE` | Identitas sekolah awal dan zona waktu IANA |
+| `LOG_REQUESTS` | Log metadata tersanitasi; produksi aktif secara default kecuali `false` |
+| `DELETION_LEDGER_PATH` | Path absolut ledger terpisah; wajib untuk worker production |
+| `PG_BIN` | Direktori alat PostgreSQL untuk backup/restore, atau sediakan melalui PATH |
+| `BACKUP_KEY` | Kunci backup 32 byte acak dalam base64; simpan terpisah dari arsip |
+| `RESTORE_DATABASE_URL` | Database kosong dan terisolasi untuk pemulihan |
+
+Tidak ada password database, `SESSION_SECRET`, kunci backup, atau kredensial bootstrap yang boleh diekspos melalui awalan `VITE_`, URL, log, dan source control.
+
+## Perintah Pengembangan
+
+### Backend — jalankan dari `backend/`
+
+| Perintah | Kegunaan |
+| --- | --- |
+| `npm run dev` | Express dengan pemantauan perubahan |
+| `npm start` | Menjalankan API; memeriksa kesiapan schema saat startup |
+| `npm run db:local` | PostgreSQL development lokal |
+| `npm run migrate` | Menjalankan migration yang belum diterapkan |
+| `npm run bootstrap` | Membuat superadmin awal satu kali |
+| `npm run seed:demo` | Kelas demo; hanya pada lingkungan/sekolah demo yang sesuai |
+| `npm run lint` | Pemeriksaan kode backend |
+| `npm test` | Pengujian API/domain dengan PostgreSQL test |
+| `npm run test:load` | Benchmark pilot pada database test sintetis |
+| `npm run retention` | Retensi/penghapusan satu kali |
+| `npm run worker` | Worker retensi dan ekspor ledger berkala |
+| `npm run backup -- <arsip.enc> <ledger.json>` | Backup terenkripsi dan ledger terpisah |
+| `npm run restore -- <arsip.enc> <ledger.json> <nama_database>` | Restore terkendali ke database kosong |
+
+### Frontend — jalankan dari `frontend/`
+
+| Perintah | Kegunaan |
+| --- | --- |
+| `npm run dev` | Vite development pada localhost:5173 |
+| `npm run lint` | Pemeriksaan kode frontend |
+| `npm test` | Pengujian domain, akses, render, dan ekspor |
+| `npm run build` | Build produksi, precache aset publik, dan service worker |
+| `npm run preview` | Pratinjau build lokal; bukan server produksi |
+
+Untuk pemeriksaan utama, jalankan pada masing-masing direktori:
+
+```powershell
 npm run lint
 npm test
+```
+
+Kemudian dari `frontend/`:
+
+```powershell
 npm run build
 ```
 
-`npm test` backend menolak URL test yang namanya tidak berakhiran `_test`. Jangan arahkan ke data nyata. Uji backend menggunakan Express, Argon2id, store sesi, constraint, dan transaksi PostgreSQL sesungguhnya. Uji frontend mencakup kesetaraan materi offline/server, perhitungan, kedaluwarsa, cakupan ekspor, dan PDF panjang. Pengujian browser melalui CUA dicatat di [laporan verifikasi](docs/VERIFICATION.md), bukan diklaim sebagai validasi siswa/ahli.
+Pengujian backend mengosongkan database test. `TEST_DATABASE_URL` harus menunjuk database disposable berakhiran `_test`, bukan database pengguna. Untuk seluruh kasus backup/restore, sediakan alat PostgreSQL melalui `PG_BIN`; kasus yang membutuhkan alat tersebut dapat dilewati jika tidak tersedia. Benchmark dijalankan terpisah sesudah suite, bukan bersamaan memakai database yang sama.
 
-Format kode memakai Prettier, konfigurasi pada root. Jalankan dari frontend: `npx prettier --check src tests scripts ../backend/src ../backend/tests`.
+Pada `npm run preview`, sesuaikan `APP_ORIGIN` backend jika menguji sesi melalui port preview. Nomor dan hasil uji historis dicatat pada dokumen verifikasi; README ini tidak memberi jaminan bahwa perubahan kode berikutnya sudah lulus tanpa menjalankan uji ulang.
 
-Build menghasilkan `frontend/dist/`, daftar aset publik `precache.json`, dan service worker berversi. PDF dimuat secara dinamis saat diminta. Untuk preview build: `npm run preview`. Jika menguji login pada port preview, ubah `APP_ORIGIN` backend agar cocok. Preview bukan konfigurasi produksi.
+## Perlindungan Data dan Akses
 
-## Retensi, hapus, dan pemulihan
+- **Login approved:** semua fitur, simulasi, ekspor termasuk lembar kosong, serta API aplikasi memerlukan sesi; akun pending/rejected/suspended ditolak.
+- **Otorisasi server:** role, sekolah, kelas, kepemilikan dan penugasan diperiksa di backend; menyembunyikan menu tidak memberikan perlindungan akses.
+- **Sesi server-side:** PostgreSQL menyimpan sesi, cookie `HttpOnly`, produksi `Secure`, dan `SameSite=Lax`. Batas absolut delapan jam dan idle 30 menit; pemeriksaan pasif tidak memperpanjang idle.
+- **Logout dan perubahan akses:** reset/password/status/penugasan mencabut sesi terkait. UI privat dibersihkan, request dibatalkan, dan respons yang terlambat ditolak. Logout yang gagal jaringan tetap mengunci akses lokal sampai pencabutan dapat dicoba kembali.
+- **Berbagi terpilih:** snapshot konsultasi hanya berasal dari bagian akun yang dipilih; tidak berubah diam-diam saat refleksi berikutnya diedit. Dokumen yang sudah diunduh penerima tidak dapat ditarik dari perangkatnya oleh sistem.
+- **Agregat aman:** hitungan siswa unik, consent terpisah, kelompok 1–4 serta pelengkap yang dapat mengungkapnya disembunyikan dari respons, tooltip dan tampilan.
+- **Konten dan cache:** draf tidak masuk katalog; opsi menyimpan versi. Respons API memakai `no-store`, service worker hanya menyimpan shell/aset publik. Shell luring tidak membuka fitur privat tanpa verifikasi sesi.
+- **Penghapusan:** siswa approved dapat menghapus data aktif miliknya melalui Pengaturan Data, tanpa persetujuan guru. Penghapusan pendaftaran yang belum aktif ditangani melalui petugas sekolah dengan verifikasi pemilik.
 
-`DELETE /api/me/data` menghapus akun siswa beserta seluruh turunan aktif, kontribusi, permintaan, salinan berbagi, dan sesi. Tindakan mandiri ini memerlukan sesi siswa approved dan tidak membutuhkan persetujuan guru. Akun belum aktif mengurus penghapusan pendaftaran melalui petugas sekolah. Jalur penghapusan anonim lama di L02 dinonaktifkan. Dokumen yang sudah diunduh penerima berada di luar kemampuan penarikan sistem.
+Retensi mengikuti akhir tahun ajaran yang dikonfigurasi serta kebijakan pengajuan. Akses jatuh tempo ditolak meskipun job belum berjalan. Prosedur ledger, retensi audit, backup terenkripsi, dan pemulihan ada pada [runbook operasional](docs/OPERASIONAL.md).
 
-Jalankan dari direktori backend:
+## Deployment dan Pemeliharaan
 
-```powershell
-npm run retention
-node src/scripts/export-deletions.js ABSOLUTE_PATH_TO_SEPARATE_LEDGER.json
-```
+Repository menyediakan dua jalur konfigurasi:
 
-Job menghapus akun sesuai `retention_end_at`, pengajuan yang melewati batas, permintaan tamu historis yang jatuh tempo, sesi kedaluwarsa, dan audit lebih dari 90 hari. Akses data kelas sudah ditolak setelah tenggat meskipun job belum berjalan. `npm run worker` menyediakan loop retensi setiap jam dengan advisory lock dan ekspor ledger setiap menit; jalankan melalui pengelola proses operator. Script tidak diaktifkan pada database pengguna selama audit.
+| Jalur | Berkas/panduan | Catatan |
+| --- | --- | --- |
+| Node.js / container dengan reverse proxy | [Dockerfile](Dockerfile), [contoh Nginx](deploy/nginx.conf.example) | Express produksi menyajikan `frontend/dist/` dan `/api` pada satu origin |
+| Adapter serverless dan frontend statis | [vercel.json](vercel.json), [api/index.mjs](api/index.mjs), [panduan deploy manual](docs/VERCEL-DEPLOY.md) | Gunakan konfigurasi root repository; job pemeliharaan tetap perlu penjadwal yang sesuai |
 
-Simpan cadangan harian terenkripsi dan deletion ledger pada tempat terpisah. Tetapkan masa cadangan maksimal 30 hari. Setelah memulihkan database, **sebelum membuka trafik**:
+Konfigurasi di repository bukan bukti deployment sudah berlangsung. Tidak ada URL demo produksi yang diasumsikan aktif di README ini.
 
-```powershell
-npm run migrate
-node src/scripts/reapply-deletions.js ABSOLUTE_PATH_TO_CURRENT_LEDGER.json
-npm run retention
-```
+Urutan persiapan:
 
-Ledger memakai hash identitas acak dan mencakup akun serta permintaan yang dihapus. Backup terenkripsi/restore PostgreSQL nyata sudah diuji lokal pada database sintetis. Perintah baru `npm run backup` dan `npm run restore` serta health, monitoring, worker, batas RPO dan rekonsiliasi kredensial dijelaskan dalam [runbook operasional](docs/OPERASIONAL.md). Cadangan penyedia dan rekonsiliasi pasca-snapshot tetap diuji operator pada targetnya.
+1. Tetapkan operator, domain, penyedia, PostgreSQL dan kebijakan sekolah.
+2. Pasang dependensi dari lockfile, build frontend, dan jalankan migration pada database tujuan.
+3. Bootstrap admin pertama secara aman, kemudian keluarkan kredensial bootstrap dari runtime.
+4. Atur origin HTTPS, proxy/cookie, kelas, penugasan BK, kontak dan jam layanan.
+5. Pasang penjadwal retensi, ledger independen, backup terenkripsi dan monitoring.
+6. Lakukan smoke test browser sampai database: login role, approval, simpan/reload, konsultasi, PDF, logout dan penghapusan.
 
-## Deployment
+Runtime production menolak `DEMO_CONTENT=true`, sekolah demo, kredensial bootstrap yang masih terpasang, serta schema yang belum lengkap. Jangan menjalankan seed atau fixture QA pada database sekolah.
 
-Target yang didukung: Node.js dengan koneksi PostgreSQL, HTTPS, dan satu origin. Pada `NODE_ENV=production`, Express juga menyajikan `frontend/dist/` serta fallback delapan rute. Contoh container ada di [Dockerfile](Dockerfile); contoh reverse proxy pada [deploy/nginx.conf.example](deploy/nginx.conf.example). Image/container belum dibangun di mesin ini karena Docker tidak tersedia.
+Health tersedia pada `/api/health/live` untuk proses dan `/api/health` untuk database/tabel sesi/limiter. Metadata operasi tersedia pada `/api/admin/operations` khusus superadmin. Pemantauan, worker, backup harian, restore terisolasi, dan rekonsiliasi perubahan akses dijelaskan di [OPERASIONAL.md](docs/OPERASIONAL.md).
 
-Urutan: pilih penyedia/domain/operator → buat PostgreSQL terpisah → set rahasia/runtime → `npm ci` dan build → migration → bootstrap aman → atur kelas/penugasan/layanan → uji cookie HTTPS dan alur per role → pasang retensi, backup, monitoring → smoke test browser sampai database. Jangan menjalankan seed atau fixture QA di database produksi. Data PostgreSQL lokal pada `.local/` bukan mekanisme backup produksi.
+Sebelum membuka trafik dari hasil pemulihan, terapkan ledger penghapusan terbaru, retensi, serta rekonsiliasi reset/suspend sejak snapshot. Cadangan harus mempunyai masa simpan sesuai kebijakan, dengan target maksimal 30 hari pada rancangan produk. Contoh Docker/proxy dan integrasi hosting perlu diuji pada lingkungan tujuan; jangan menyamakan pengujian lokal dengan verifikasi hosting.
 
-Pemilik proyek akan melakukan deployment manual. Perbaikan ini tidak membuat paket deployment, melakukan deployment eksternal, atau membeli layanan.
+## Status dan Batas Verifikasi
 
-## Struktur implementasi
+| Area | Kondisi dokumentasi saat ini |
+| --- | --- |
+| Aplikasi lokal | Frontend, API, database, login/approval dan alur siswa/BK sudah diimplementasikan |
+| Pengujian teknis | Rekaman API/domain/browser, build, akses, perbaikan temuan dan batas pengukuran tersedia di dokumen laporan |
+| Konten | 24 butir dan lima skenario masih membutuhkan telaah ahli; 10 kartu contoh belum menjadi 40 kartu resmi terverifikasi |
+| Uji pengguna | Persetujuan, uji 6–10 siswa dan BK, keterpahaman, serta SUS memerlukan pelaksanaan dan bukti manusia |
+| Lingkungan operasional | Hosting, HTTPS/cookie, scheduler, backup penyedia dan smoke test harus diverifikasi operator pada targetnya |
 
-`backend/src/modules/` memisahkan auth, approval, users/classes, exploration, content, consultations, reports, dan audit. Identitas, kelas, keputusan, sesi, konten, konsultasi, audit, laporan sumber, dan ledger dinormalisasi. Eksplorasi privat memakai JSONB tervalidasi/berevisi agar jawaban, matriks, musyawarah, rencana, serta versinya tersimpan atomik. Ini keputusan implementasi model domain, bukan penyimpanan hasil perhitungan dari browser sebagai sumber kebenaran.
+**Catatan pembaruan 22 November 2026:** akses fitur diwajibkan login approved; beranda pengenalan tetap publik. Migration `005_rate_limits` pada development lokal sudah ditangani dalam pekerjaan sebelumnya untuk memperbaiki error `/api/auth/me`; instalasi lain tetap harus menjalankan `npm run migrate`. Riwayat remediasi mencakup pembatasan request PostgreSQL, retensi/ledger, backup/restore, dan pemeriksaan tampilan/aksesibilitas/PDF pada cakupan yang dicatat.
 
-`frontend/src/pages/` memuat tepat delapan halaman utama. Komponen bersama, context, storage, ekspor, dan Fetch API terpusat berada di folder terpisah. Semua kode aplikasi JavaScript/JSX. Tidak ada role dari localStorage atau kontrol pratinjau role.
+Untuk hasil dan bukti yang tepat, baca [akses login](docs/LOGIN-ACCESS.md), [hasil remediasi](docs/REMEDIATION-2026-11-22.md), [audit awal](docs/PRODUCTION-AUDIT-2026-11-22.md), dan [verifikasi implementasi](docs/VERIFICATION.md). Catatan pengujian lama yang memakai Mode Tamu bersifat historis; gunakan aturan akses terbaru.
 
-## Pekerjaan eksternal yang tersisa
+Belum ada klaim bahwa telaah ahli, sumber konten resmi, persetujuan sekolah/wali, SUS, kapasitas hosting, atau efektivitas keputusan karier sudah lulus hanya karena kode dan tampilan tersedia. Form pencatatannya disiapkan pada [VALIDASI-SEKOLAH.md](docs/VALIDASI-SEKOLAH.md).
 
-- Ahli BK/media menelaah 24 butir, penjelasan dimensi, lima simulasi, musyawarah, dan teks persetujuan.
-- Verifikator menyiapkan 10 kartu awal lalu 40 kartu terverifikasi lintas kategori. Sepuluh contoh yang tersedia tidak dihitung sebagai kartu terverifikasi.
-- Sekolah menetapkan mekanisme persetujuan siswa/wali, periode retensi, kontak/jam nyata, penanggung jawab layanan, serta prosedur reset identitas.
-- Uji 6–10 siswa dan satu BK dengan persetujuan; ukur keberhasilan tugas, keterpahaman, dan SUS. Uji perangkat Android/pembaca layar sasaran dan 4G yang tercatat.
-- Operator memilih hosting/domain, memasang HTTPS, scheduler/backup/monitoring, melakukan simulasi restore dan smoke test pada deployment.
+## Dokumen Pendukung
 
-Tidak ada hasil uji manusia, persetujuan sekolah, sumber resmi, atau biaya yang dibuat-buat.
+| Dokumen | Isi |
+| --- | --- |
+| [PRD.md](PRD.md) | Tujuan, aturan produk, kebutuhan fitur dan kriteria penerimaan |
+| [design.md](design.md) | Sistem visual, delapan layout dan referensi UI |
+| [structure.md](structure.md) | Stack, modul, struktur frontend/backend, serta kontrak akun |
+| [TASKLIST.md](TASKLIST.md) | Pekerjaan dan status implementasi; perhatikan catatan perubahan akses terbaru |
+| [LOGIN-ACCESS.md](docs/LOGIN-ACCESS.md) | Gerbang sesi, role, logout, ekspor dan cakupan akses publik |
+| [VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md) | Konfigurasi deploy manual adapter yang tersedia |
+| [OPERASIONAL.md](docs/OPERASIONAL.md) | Health, worker, log, backup/restore, ledger dan pemulihan |
+| [ASSETS.md](docs/ASSETS.md) | Sumber aset dan catatan hak penggunaan |
+| [VALIDASI-SEKOLAH.md](docs/VALIDASI-SEKOLAH.md) | Materi/protokol dan lembar keputusan ahli/sekolah |
+| [REMEDIATION-2026-11-22.md](docs/REMEDIATION-2026-11-22.md) | Hasil perbaikan teknis, verifikasi dan pekerjaan eksternal yang tersisa |
+| [VERIFICATION.md](docs/VERIFICATION.md) | Jejak pengujian implementasi beserta batasnya |
+
+---
+
+<p align="center">
+  <strong>PILIHANKU</strong><br />
+  Ruang untuk tumbuh, arah untuk melangkah.<br />
+  <sub>Keputusan tetap milik siswa, dengan dukungan keluarga dan Guru BK.</sub>
+</p>
+
+Format penyajian dokumentasi diadaptasi dari [PHOTOBOOTH1](https://github.com/tegokkk/PHOTOBOOTH1). Screenshot pembuka berasal dari tampilan PILIHANKU yang diberikan pemilik proyek.
