@@ -6,7 +6,6 @@ import { ExplorationProvider } from './context/ExplorationContext.jsx';
 import { Shell } from './components/navigation/Shell.jsx';
 import { PrivacyPanel } from './features/privacy/PrivacyPanel.jsx';
 import { Notice, LoadingState } from './components/ui/index.jsx';
-import { TopographyBackground } from './components/ui/backgrounds-topography.jsx';
 const Home = lazy(() => import('./pages/HomePage.jsx')),
   Start = lazy(() => import('./pages/StartPage.jsx')),
   Self = lazy(() => import('./pages/SelfDiscoveryPage.jsx')),
@@ -58,22 +57,13 @@ export default function App() {
     const panel = new URLSearchParams(location.search).get('panel');
     if (panel && panel !== 'privacy') return <Navigate replace to="/mulai?tab=masuk" />;
     return (
-      <>
-        <TopographyBackground
-          globalPointer
-          className="topography-backdrop"
-          lineColor="rgba(71, 123, 117, 0.24)"
-          levels={14}
-          speed={0.65}
-        />
-        <ErrorBoundary>
-          <Shell>
-            <Suspense fallback={<LoadingState label="Memuat beranda…" />}>
-              <Home />
-            </Suspense>
-          </Shell>
-        </ErrorBoundary>
-      </>
+      <ErrorBoundary>
+        <Shell>
+          <Suspense fallback={<LoadingState label="Memuat beranda…" />}>
+            <Home />
+          </Suspense>
+        </Shell>
+      </ErrorBoundary>
     );
   }
   if (!user) {
@@ -86,38 +76,29 @@ export default function App() {
     )
       return <Navigate replace to="/mulai?tab=masuk" />;
     return (
-      <>
-        <TopographyBackground
-          globalPointer
-          className="topography-backdrop"
-          lineColor="rgba(71, 123, 117, 0.24)"
-          levels={14}
-          speed={0.65}
-        />
-        <main className={`page-content ${privacy ? 'privacy-shell' : 'auth-split-shell'}`}>
-          {privacy && (
-            <div className="auth-header">
-              <Link className="brand navbar-brand" to="/" aria-label="PILIHANKU Beranda">
-                <span className="navbar-brand-mark" aria-hidden="true">
-                  <Sprout size={18} strokeWidth={2.2} />
-                </span>
-                <span>PILIHANKU</span>
-              </Link>
-            </div>
-          )}
-          <Notice type="warning">
-            {error ? 'Sesi belum dapat diverifikasi. Periksa koneksi dan masuk kembali.' : ''}
-          </Notice>
-          <Suspense fallback={<LoadingState label="Memuat halaman Masuk…" />}>
-            {privacy ? <PrivacyPanel type="privacy" /> : <Start />}
-          </Suspense>
-          <div className="auth-footer">
-            <Link to={privacy ? '/mulai?tab=masuk' : '/mulai?panel=privacy'}>
-              {privacy ? 'Kembali ke Masuk' : 'Informasi privasi'}
+      <main className={`page-content ${privacy ? 'privacy-shell' : 'auth-split-shell'}`}>
+        {privacy && (
+          <div className="auth-header">
+            <Link className="brand navbar-brand" to="/" aria-label="PILIHANKU Beranda">
+              <span className="navbar-brand-mark" aria-hidden="true">
+                <Sprout size={18} strokeWidth={2.2} />
+              </span>
+              <span>PILIHANKU</span>
             </Link>
           </div>
-        </main>
-      </>
+        )}
+        <Notice type="warning">
+          {error ? 'Sesi belum dapat diverifikasi. Periksa koneksi dan masuk kembali.' : ''}
+        </Notice>
+        <Suspense fallback={<LoadingState label="Memuat halaman Masuk…" />}>
+          {privacy ? <PrivacyPanel type="privacy" /> : <Start />}
+        </Suspense>
+        <div className="auth-footer">
+          <Link to={privacy ? '/mulai?tab=masuk' : '/mulai?panel=privacy'}>
+            {privacy ? 'Kembali ke Masuk' : 'Informasi privasi'}
+          </Link>
+        </div>
+      </main>
     );
   }
   if (location.pathname === '/mulai' && !location.search.includes('panel='))
@@ -143,13 +124,6 @@ export default function App() {
         </main>
       )}
       <div hidden={checking} inert={checking}>
-        <TopographyBackground
-          globalPointer
-          className="topography-backdrop"
-          lineColor="rgba(71, 123, 117, 0.22)"
-          levels={14}
-          speed={0.65}
-        />
         <ErrorBoundary>
           <ExplorationProvider key={user.id} user={user}>
             <Shell>

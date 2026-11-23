@@ -3538,36 +3538,7 @@ input[type='radio']:checked {
   }
 }
 
-.topography-backdrop {
-  position: fixed !important;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, #f8f7f2 0%, #efeee7 100%);
-}
-
-#root {
-  position: relative;
-  isolation: isolate;
-}
-
-.landing-shell,
-.manager-shell,
-.auth-shell,
-.site-header,
-.stepper,
-.page-content,
-.landing-content,
-.site-footer {
-  position: relative;
-  z-index: 1;
-}
-
-.landing-shell {
-  background: transparent;
-}
-
-/* Dashboard & Student Workspace solid boxed cards over topography backdrop */
+/* Dashboard & Student Workspace solid boxed cards */
 .stepper {
   background: var(--surface);
   border: 1px solid var(--border);

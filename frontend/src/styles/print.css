@@ -28,8 +28,7 @@
   .no-print,
   .page-heading,
   .skip-link,
-  .tab-indicator,
-  .topography-backdrop {
+  .tab-indicator {
     display: none !important;
   }
   .landing-shell,
