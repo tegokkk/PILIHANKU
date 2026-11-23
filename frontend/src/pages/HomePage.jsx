@@ -5,7 +5,6 @@ import { categories } from '../data/materials.js';
 import { useExploration } from '../context/exploration.js';
 import { matrix, emptyExploration } from '../utils/calculations.js';
 import { Accordion } from '../components/ui/index.jsx';
-import { ScrambleText } from '../components/ui/scramble-text.jsx';
 import { useScrollReveal } from '../hooks/useMotion.js';
 
 export default function HomePage() {
@@ -26,35 +25,11 @@ export default function HomePage() {
         <div className="hero-copy">
           <span className="eyebrow">RUANG UNTUK TUMBUH, ARAH UNTUK MELANGKAH</span>
           <h1>
-            <ScrambleText
-              text="Kenali diri."
-              duration={0.9}
-              stagger={0.045}
-              delay={0}
-              blur={4}
-              scrambleSpeed={0.9}
-              characters="upperAndLowerCase"
-            />
+            Kenali diri.
             <br />
-            <ScrambleText
-              text="Jelajahi pilihan."
-              duration={0.9}
-              stagger={0.045}
-              delay={0.28}
-              blur={4}
-              scrambleSpeed={0.9}
-              characters="upperAndLowerCase"
-            />
+            Jelajahi pilihan.
             <br />
-            <ScrambleText
-              text="Rancang masa depan."
-              duration={0.9}
-              stagger={0.045}
-              delay={0.56}
-              blur={4}
-              scrambleSpeed={0.9}
-              characters="upperAndLowerCase"
-            />
+            Rancang masa depan.
           </h1>
           <p>
             Mulai dari minat dan hal yang penting bagimu. Jelajahi kuliah, vokasi, kerja, atau
@@ -86,9 +61,7 @@ export default function HomePage() {
         <section className="continue-block" data-reveal style={{ '--stagger': 1 }}>
           <div>
             <p className="eyebrow">PERJALANANMU</p>
-            <h2>
-              <ScrambleText text="Lanjutkan dari langkahmu" duration={0.8} stagger={0.035} />
-            </h2>
+            <h2>Lanjutkan dari langkahmu</h2>
             <p>
               {done.filter(Boolean).length} dari 4 langkah lengkap. Kamu tetap bebas menjelajah.
             </p>
@@ -112,14 +85,9 @@ export default function HomePage() {
         <div className="section-title" data-reveal style={{ '--stagger': 0 }}>
           <p className="eyebrow">PELAN-PELAN, SATU LANGKAH DULU</p>
           <h2>
-            <ScrambleText text="Masa depanmu," duration={0.85} stagger={0.04} delay={0} />
+            Masa depanmu,
             <br />
-            <ScrambleText
-              text="kamu yang mengenalinya."
-              duration={0.85}
-              stagger={0.035}
-              delay={0.22}
-            />
+            kamu yang mengenalinya.
           </h2>
           <p>
             Bukan mencari satu jawaban yang paling benar. Ini ruang untuk mendengar diri sendiri dan
@@ -158,14 +126,9 @@ export default function HomePage() {
         <div className="section-title" data-reveal style={{ '--stagger': 0 }}>
           <p className="eyebrow">BANYAK CARA UNTUK BERTUMBUH</p>
           <h2>
-            <ScrambleText text="Empat jalur." duration={0.85} stagger={0.04} delay={0} />
+            Empat jalur.
             <br />
-            <ScrambleText
-              text="Peluang yang setara."
-              duration={0.85}
-              stagger={0.035}
-              delay={0.22}
-            />
+            Peluang yang setara.
           </h2>
           <p>Setiap jalur punya proses, tantangan, dan ruang belajarnya sendiri.</p>
         </div>
@@ -192,9 +155,7 @@ export default function HomePage() {
         <Compass size={48} />
         <div>
           <p className="eyebrow">BAGAIMANA JIKA?</p>
-          <h2>
-            <ScrambleText text="Latihan melihat kemungkinan." duration={0.85} stagger={0.035} />
-          </h2>
+          <h2>Latihan melihat kemungkinan.</h2>
           <p>
             Coba lima cerita bercabang untuk memikirkan alternatif, tanpa jawaban benar atau salah.
           </p>
@@ -205,9 +166,9 @@ export default function HomePage() {
       </section>
       <section className="landing-section faq" data-reveal style={{ '--stagger': 0 }}>
         <h2>
-          <ScrambleText text="Pertanyaan yang" duration={0.85} stagger={0.04} delay={0} />
+          Pertanyaan yang
           <br />
-          <ScrambleText text="sering diajukan" duration={0.85} stagger={0.04} delay={0.22} />
+          sering diajukan
         </h2>
         <div>
           {[
@@ -237,9 +198,9 @@ export default function HomePage() {
       <section className="closing" data-reveal style={{ '--stagger': 0 }}>
         <p className="eyebrow">MULAI DARI RASA INGIN TAHU</p>
         <h2>
-          <ScrambleText text="Siap mengenal arahmu" duration={0.85} stagger={0.04} delay={0} />
+          Siap mengenal arahmu
           <br />
-          <ScrambleText text="lebih tenang?" duration={0.85} stagger={0.04} delay={0.22} />
+          lebih tenang?
         </h2>
         <Link className="button accent" to="/mulai">
           Mulai perjalananmu

@@ -3,7 +3,6 @@ import { ChevronDown } from 'lucide-react';
 import { riasec, matrix } from '../../utils/calculations.js';
 import { dimensions, questions } from '../../data/materials.js';
 import { prefersReducedMotion } from '../../hooks/useMotion.js';
-import { ScrambleText } from './scramble-text.jsx';
 
 export function Button({ children, variant = '', className = '', loading = false, ...props }) {
   return (
@@ -146,13 +145,7 @@ export function Heading({ eyebrow, title, children, level = 1 }) {
   return (
     <div className="page-heading">
       <p className="eyebrow">{eyebrow}</p>
-      <Tag>
-        {typeof title === 'string' ? (
-          <ScrambleText text={title} duration={0.8} stagger={0.035} blur={4} scrambleSpeed={0.9} />
-        ) : (
-          title
-        )}
-      </Tag>
+      <Tag>{title}</Tag>
       {children && <p className="intro">{children}</p>}
     </div>
   );
