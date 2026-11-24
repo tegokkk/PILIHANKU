@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import { randomUUID, randomBytes, createHash } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { z, text, uuid, parse } from '../../middleware/validate.js';
-import { allow, teacherClass } from '../../middleware/authenticate.js';
+import { allow } from '../../middleware/authenticate.js';
 import { audit } from '../audit/audit.js';
 import { fail } from '../../utils/api-error.js';
 import { pageNumber, paginate } from '../../utils/pagination.js';
-export const codeHash = (code) => createHash('sha256').update(code).digest('hex');
 export function classesRoutes(db) {
   const router = Router();
   router.use(allow('superadmin', 'bk'));
@@ -23,15 +22,7 @@ export function classesRoutes(db) {
       );
     const result = await paginate(
       q
-        .select(
-          'id',
-          'label',
-          'grade',
-          'academic_year',
-          'retention_end_at',
-          'active',
-          db.raw('(join_code_hash IS NOT NULL) as code_active')
-        )
+        .select('id', 'label', 'grade', 'academic_year', 'retention_end_at', 'active')
         .orderBy('label')
         .orderBy('id'),
       input.page
@@ -77,19 +68,6 @@ export function classesRoutes(db) {
     fail(n, 404, 'NOT_FOUND', 'Kelas tidak tersedia.');
     await audit(db, req.user.id, 'class.status', id);
     res.json({ data: { updated: true } });
-  });
-  router.post('/:id/code', async (req, res) => {
-    const id = parse(uuid, req.params.id),
-      input = parse(z.object({ action: z.enum(['rotate', 'disable']) }).strict(), req.body);
-    if (req.user.role === 'bk') await teacherClass(db, req.user, id);
-    const cls = await db('classes').where({ id, school_id: req.user.school_id }).first();
-    fail(cls, 404, 'NOT_FOUND', 'Kelas tidak tersedia.');
-    const code = input.action === 'rotate' ? randomBytes(12).toString('base64url') : null;
-    await db('classes')
-      .where({ id })
-      .update({ join_code_hash: code ? codeHash(code) : null });
-    await audit(db, req.user.id, `class.code.${input.action}`, id);
-    res.json({ data: { code } });
   });
   router.get('/service', async (req, res) => {
     const data = await db('schools')

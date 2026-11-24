@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { randomUUID, createHash } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import argon2 from 'argon2';
 import { z, text, username, password, parse } from '../../middleware/validate.js';
 import { fail } from '../../utils/api-error.js';
@@ -27,6 +27,24 @@ async function verify(db, input) {
   );
   return user;
 }
+async function registrationClass(db, env) {
+  const candidates = await db('classes')
+    .where({ active: true })
+    .where('retention_end_at', '>', new Date())
+    .modify((q) => {
+      if (env.registrationClassId) q.where('id', env.registrationClassId);
+    })
+    .orderBy('id')
+    .limit(2)
+    .forShare();
+  fail(
+    candidates.length === 1,
+    503,
+    'REGISTRATION_UNAVAILABLE',
+    'Pendaftaran belum tersedia. Hubungi pengelola untuk mengaktifkan pendaftaran.'
+  );
+  return candidates[0];
+}
 export function authRoutes(db, limiter, env) {
   const router = Router();
   router.get('/csrf', (req, res) => {
@@ -51,19 +69,16 @@ export function authRoutes(db, limiter, env) {
         : null,
     });
   });
-  router.post('/class-context', limiter, async (req, res) => {
-    const input = parse(z.object({ classCode: text(100).min(8) }).strict(), req.body);
-    const cls = await db('classes as c')
-      .join('schools as s', 's.id', 'c.school_id')
-      .where({
-        'c.join_code_hash': createHash('sha256').update(input.classCode).digest('hex'),
-        'c.active': true,
-      })
-      .where('c.retention_end_at', '>', new Date())
-      .select('c.label', 'c.academic_year', 'c.retention_end_at', 's.name', 's.timezone')
-      .first();
-    fail(cls, 422, 'CLASS_INVALID', 'Kode kelas tidak aktif atau tidak sesuai.');
-    res.json({ data: { ...cls, pendingRetentionDays: env.pendingDays } });
+  router.get('/registration-context', limiter, async (req, res) => {
+    const cls = await registrationClass(db, env);
+    const school = await db('schools').where({ id: cls.school_id }).first();
+    res.json({
+      data: {
+        pendingRetentionDays: env.pendingDays,
+        retentionEnd: cls.retention_end_at,
+        timezone: school.timezone,
+      },
+    });
   });
   router.post('/register', limiter, async (req, res) => {
     const input = parse(
@@ -73,22 +88,15 @@ export function authRoutes(db, limiter, env) {
           displayName: text(50).min(1),
           password,
           confirmation: password,
-          classCode: text(100).min(8),
           consent: z.literal(true),
         })
         .strict()
         .refine((i) => i.password === i.confirmation, 'Konfirmasi password tidak sama'),
       req.body
     );
-    const hash = createHash('sha256').update(input.classCode).digest('hex');
     const passwordHash = await hashPassword(input.password);
     const data = await db.transaction(async (trx) => {
-      const cls = await trx('classes')
-        .where({ join_code_hash: hash, active: true })
-        .where('retention_end_at', '>', new Date())
-        .forShare()
-        .first();
-      fail(cls, 422, 'CLASS_INVALID', 'Kode kelas tidak aktif atau tidak sesuai.');
+      const cls = await registrationClass(trx, env);
       const id = randomUUID(),
         registrationId = randomUUID();
       await trx('users').insert({

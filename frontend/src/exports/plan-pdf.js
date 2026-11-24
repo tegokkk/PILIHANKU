@@ -43,10 +43,10 @@ export function exportSections(data, scope) {
   if (scope.plan)
     sections.push({
       title: 'Rencana Langkahku',
-      text: `${data.plan.status === 'exploring' ? 'Aku masih menjelajah' : `Pilihan utama: ${data.plan.main}`}\nCadangan: ${data.plan.backup || 'Belum ditentukan'}\n${data.plan.tasks.length < 3 ? 'Draf — kurang dari tiga langkah.' : ''}`,
+      text: `${data.plan.status === 'exploring' ? 'Aku masih menjelajah' : `Pilihan utama: ${data.plan.main || 'Belum ditentukan'}`}\nCadangan: ${data.plan.backup || 'Belum ditentukan'}\n${data.plan.tasks.length < 3 ? 'Draf — kurang dari tiga langkah.' : data.plan.tasks.some((t) => !t.title.trim()) || (data.plan.status === 'chosen' && !data.plan.main.trim()) ? 'Draf — rencana belum lengkap.' : ''}`,
       head: ['Langkah', 'Tenggat', 'Status'],
       rows: data.plan.tasks.map((t) => [
-        t.title,
+        t.title || 'Belum diisi',
         t.due || 'Belum ditentukan',
         t.done ? 'Selesai' : 'Belum',
       ]),

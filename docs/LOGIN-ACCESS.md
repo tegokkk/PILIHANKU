@@ -11,7 +11,7 @@ Verifikasi revisi: 11/11 uji frontend lulus, lint kedua aplikasi lulus, dan uji 
 ## Perilaku akses
 
 - Semua fitur memerlukan sesi server akun approved. Pending, rejected, dan suspended tidak mendapatkan sesi aplikasi.
-- Tanpa sesi: Beranda, Masuk, Daftar Siswa, pemeriksaan status dengan verifikasi username/password, dan informasi privasi. Pemeriksaan kode kelas terbatas pada kebutuhan pendaftaran. Health check tetap tersedia untuk operasional.
+- Tanpa sesi: Beranda, Masuk, Daftar Siswa, pemeriksaan status dengan verifikasi username/password, dan informasi privasi. Pendaftaran tanpa kode kelas maupun pilihan sekolah/kelas. Server memakai kelas aktif tunggal atau kelas bawaan dari REGISTRATION_CLASS_ID. Jika ada beberapa kelas aktif, pengelola wajib menentukan kelas bawaan di environment. Health check tetap tersedia untuk operasional.
 - Mode Tamu, konsultasi token tamu, impor draf tamu, serta penghapusan akun anonim lama dinonaktifkan. Penghapusan mandiri siswa ada di Pengaturan Data setelah login; penghapusan pendaftaran yang belum aktif melalui petugas sekolah.
 - Siswa masuk ke Kenali Diriku; BK dan superadmin ke dashboard dengan isi sesuai role server. BK hanya mendapatkan kelas/layanan yang diwenangkan, siswa hanya data miliknya, dan superadmin administrasi.
 - Gerbang React berada sebelum shell, provider eksplorasi, route, panel, dan animasi. Beranda pengenalan tetap publik; seluruh URL fitur anonim kembali ke Masuk. Pada konfigurasi produksi, Express juga mengarahkan URL halaman fitur anonim sebelum mengirim shell aplikasi.

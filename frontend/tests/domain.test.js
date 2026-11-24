@@ -72,6 +72,21 @@ test('long PDF content wraps to multiple pages and has no omitted secrets', asyn
   assert.ok(doc.getNumberOfPages() > 1);
   assert.equal(doc.output().includes('JANGAN-IKUT'), false);
 });
+
+test('PDF labels an incomplete saved plan as a draft even when three tasks exist', () => {
+  const data = emptyExploration();
+  data.plan.status = 'chosen';
+  data.plan.tasks = Array.from({ length: 3 }, (_, i) => ({
+    id: String(i),
+    title: i ? `Langkah ${i}` : '',
+    due: '',
+    done: false,
+  }));
+  const plan = exportSections(data, { plan: true })[0];
+  assert.match(plan.text, /Pilihan utama: Belum ditentukan/);
+  assert.match(plan.text, /Draf/);
+  assert.equal(plan.rows[0][0], 'Belum diisi');
+});
 test('source reference HTML remains intact and application avoids CDN/role preview', async () => {
   const app = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.equal(app.includes('cdn.tailwindcss'), false);

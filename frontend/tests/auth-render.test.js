@@ -51,6 +51,25 @@ test('all eight layouts render only the session check, even with a stale user in
     assert.match(homepage, /Mulai eksplorasi/);
     assert.match(homepage, /tab=masuk/);
     assert.doesNotMatch(homepage, /Selamat datang kembali|Keluar|Lanjutkan dari langkahmu/);
+    const { default: StartPage } = await server.ssrLoadModule('/src/pages/StartPage.jsx');
+    const registration = renderToString(
+      React.createElement(
+        MemoryRouter,
+        { initialEntries: ['/mulai?tab=daftar'] },
+        React.createElement(
+          AuthContext.Provider,
+          { value: { user: null } },
+          React.createElement(StartPage)
+        )
+      )
+    );
+    assert.match(registration, /Daftar Siswa/);
+    assert.match(registration, /Konfirmasi password/);
+    assert.match(registration, /Saya menyetujui penyimpanan data pendaftaran akun/);
+    assert.doesNotMatch(
+      registration,
+      /Kode kelas|Sekolah dan kelas tujuan|Pilih sekolah|<select|classCode|classId/
+    );
   } finally {
     await server.close();
   }

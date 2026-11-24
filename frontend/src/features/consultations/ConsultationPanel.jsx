@@ -128,8 +128,6 @@ export function ConsultationPanel() {
     setError('');
     try {
       await exploration.persist();
-      if (exploration.conflict || exploration.error)
-        throw new Error('Data belum tersimpan. Periksa status simpan sebelum berbagi.');
       const result = await api('/consultations', {
         method: 'POST',
         headers: { 'Idempotency-Key': key },

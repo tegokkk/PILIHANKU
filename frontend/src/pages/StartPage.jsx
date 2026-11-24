@@ -11,15 +11,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/auth.js';
 import { useTab } from '../hooks/useTab.js';
-import {
-  Button,
-  Field,
-  Check,
-  Tabs,
-  Notice,
-  AsyncButton,
-  Accordion,
-} from '../components/ui/index.jsx';
+import { useResource } from '../hooks/useResource.js';
+import { Button, Field, Check, Tabs, Notice, Accordion } from '../components/ui/index.jsx';
 import { api } from '../services/api.js';
 import { useDirectionalValue } from '../hooks/useMotion.js';
 
@@ -62,12 +55,10 @@ export default function StartPage() {
       displayName: '',
       password: '',
       confirmation: '',
-      classCode: '',
       consent: false,
     }),
     [error, setError] = useState(''),
     [message, setMessage] = useState(''),
-    [classContext, setClassContext] = useState(null),
     [busy, setBusy] = useState(false);
 
   const portal = PORTALS[portalKey];
@@ -75,8 +66,8 @@ export default function StartPage() {
   const portalDir = useDirectionalValue(portalKey, PORTAL_ORDER);
   const tabDir = useDirectionalValue(tab, ['masuk', 'daftar', 'status']);
   const set = (key, value) => setForm((p) => ({ ...p, [key]: value }));
-  const classValid = classContext?.code === form.classCode;
   const activeTab = portalKey === 'siswa' ? tab : 'masuk';
+  const registration = useResource(activeTab === 'daftar' ? '/auth/registration-context' : null);
 
   const switchPortal = (nextPortal) => {
     setPortalKey(nextPortal);
@@ -244,57 +235,34 @@ export default function StartPage() {
                         value={form.confirmation}
                         onChange={(e) => set('confirmation', e.target.value)}
                       />
-                      <div className="inline-check-group">
-                        <Field
-                          label="Kode kelas"
-                          required
-                          minLength={8}
-                          maxLength={100}
-                          placeholder="Kode dari sekolah"
-                          value={form.classCode}
-                          onChange={(e) => {
-                            set('classCode', e.target.value);
-                            set('consent', false);
-                            setClassContext(null);
-                          }}
-                        />
-                        <AsyncButton
-                          type="button"
-                          variant="outline"
-                          disabled={form.classCode.length < 8}
-                          action={async () =>
-                            setClassContext({
-                              ...(await api('/auth/class-context', {
-                                method: 'POST',
-                                body: { classCode: form.classCode },
-                              })),
-                              code: form.classCode,
-                            })
-                          }
-                        >
-                          Periksa kelas
-                        </AsyncButton>
-                      </div>
-                      {classValid && (
-                        <Notice type="success">
-                          {classContext.label} ({classContext.academic_year}) · Retensi s.d.{' '}
-                          {new Date(classContext.retention_end_at).toLocaleDateString('id-ID', {
-                            timeZone: classContext.timezone,
-                          })}
-                        </Notice>
+                      <Notice type="error">{registration.error}</Notice>
+                      {registration.error && (
+                        <Button type="button" variant="outline" onClick={registration.reload}>
+                          Coba lagi
+                        </Button>
                       )}
                       <Check
-                        label="Saya menyetujui penyimpanan data pendaftaran akun kelas"
+                        label="Saya menyetujui penyimpanan data pendaftaran akun"
                         required
-                        disabled={!classValid}
                         checked={form.consent}
                         onChange={(e) => set('consent', e.target.checked)}
                       />
                       <Accordion summary="Info retensi & hapus data">
                         <p className="caption">
                           Data eksplorasi tersimpan setelah akun disetujui. Pengajuan belum aktif
-                          disimpan maks. {classContext?.pendingRetentionDays || 90} hari atau akhir
-                          retensi kelas.
+                          disimpan maks. {registration.data?.pendingRetentionDays || 90} hari atau
+                          akhir masa simpan yang ditetapkan pengelola.
+                          {registration.data?.retentionEnd && (
+                            <>
+                              {' '}
+                              Akhir masa simpan:{' '}
+                              {new Date(registration.data.retentionEnd).toLocaleDateString(
+                                'id-ID',
+                                { timeZone: registration.data.timezone }
+                              )}
+                              .
+                            </>
+                          )}
                         </p>
                       </Accordion>
                     </>
@@ -304,7 +272,11 @@ export default function StartPage() {
                   <div className="auth-btn-row">
                     <Button
                       loading={busy}
-                      disabled={busy || (activeTab === 'daftar' && !classValid)}
+                      disabled={
+                        busy ||
+                        (activeTab === 'daftar' &&
+                          (registration.loading || Boolean(registration.error)))
+                      }
                       variant=""
                       type="submit"
                     >

@@ -6,7 +6,6 @@ import { readEnv } from '../src/config/env.js';
 import { createDatabase } from '../src/config/database.js';
 import { createApp } from '../src/app.js';
 import { hashPassword } from '../src/modules/auth/auth.routes.js';
-import { codeHash } from '../src/modules/classes/classes.routes.js';
 import { questions, instrumentVersion, scenarios } from '../src/modules/content/materials.js';
 import { emptyExploration, riasec, matrix } from '../src/modules/exploration/calculations.js';
 import { protectAggregate } from '../src/modules/reports/reports.routes.js';
@@ -60,7 +59,6 @@ async function register(a, name = `student.${randomUUID().slice(0, 8)}`) {
     displayName: 'Siswa sintetis',
     password: secret,
     confirmation: secret,
-    classCode: 'class-test-code-123',
     consent: true,
   });
 }
@@ -76,6 +74,7 @@ beforeEach(async () => {
   otherSchool = randomUUID();
   cls = randomUUID();
   otherClass = randomUUID();
+  env.registrationClassId = cls;
   await db('schools').insert([
     {
       id: school,
@@ -100,7 +99,6 @@ beforeEach(async () => {
       grade: 'XI',
       academic_year: 'test',
       retention_end_at: '2099-01-01',
-      join_code_hash: codeHash('class-test-code-123'),
     },
     {
       id: otherClass,
@@ -109,7 +107,6 @@ beforeEach(async () => {
       grade: 'XI',
       academic_year: 'test',
       retention_end_at: '2099-01-01',
-      join_code_hash: codeHash('other-test-code-123'),
     },
   ]);
   admin = await user('superadmin');
@@ -129,11 +126,9 @@ after(async () => {
 test('health and PostgreSQL session store; credentials, logout, normalized uniqueness, injection', async () => {
   assert.equal((await request(app).get('/api/health')).body.data.database, 'connected');
   const a = agent();
-  const context = await mutate(a, 'post', '/api/auth/class-context', {
-    classCode: 'class-test-code-123',
-  });
+  const context = await a.get('/api/auth/registration-context');
   assert.equal(context.status, 200);
-  assert.ok(context.body.data.retention_end_at);
+  assert.ok(context.body.data.retentionEnd);
   assert.equal(JSON.stringify(context.body).includes('join_code_hash'), false);
   assert.equal((await register(a, 'unique.student')).status, 201);
   assert.equal((await register(a, 'UNIQUE.STUDENT')).status, 409);
@@ -158,6 +153,78 @@ test('health and PostgreSQL session store; credentials, logout, normalized uniqu
   assert.equal((await mutate(a, 'post', '/api/auth/logout')).status, 200);
   assert.equal((await a.get('/api/admin/registrations')).status, 401);
 });
+test('registration needs no school or class fields and uses only the server default', async () => {
+  const a = agent();
+  const context = await a.get('/api/auth/registration-context');
+  assert.equal(context.status, 200);
+  assert.deepEqual(Object.keys(context.body.data).sort(), [
+    'pendingRetentionDays',
+    'retentionEnd',
+    'timezone',
+  ]);
+  assert.equal(context.headers['cache-control'], 'no-store');
+  const input = {
+    username: 'no.selection.student',
+    displayName: 'Siswa',
+    password: secret,
+    confirmation: secret,
+    consent: true,
+  };
+  for (const extra of [
+    { classId: otherClass },
+    { schoolId: otherSchool },
+    { classCode: 'obsolete-code' },
+  ]) {
+    assert.equal(
+      (await mutate(a, 'post', '/api/auth/register', { ...input, ...extra })).status,
+      422
+    );
+  }
+  assert.equal((await mutate(a, 'post', '/api/auth/register', input)).status, 201);
+  const registered = await db('users').where({ username_normalized: input.username }).first();
+  assert.equal(registered.status, 'pending');
+  assert.equal(registered.school_id, school);
+  assert.equal(
+    (await db('student_registrations').where({ user_id: registered.id }).first())
+      .requested_class_id,
+    cls
+  );
+  assert.equal((await a.get('/api/auth/classes')).status, 404);
+  assert.equal(
+    (await mutate(a, 'post', '/api/auth/class-context', { classCode: 'obsolete-code' })).status,
+    404
+  );
+  await login(a, admin.username_normalized);
+  assert.equal(
+    (await mutate(a, 'post', `/api/classes/${cls}/code`, { action: 'rotate' })).status,
+    404
+  );
+});
+
+test('registration never assigns an arbitrary class when the server default is unavailable or ambiguous', async () => {
+  const a = agent();
+  env.registrationClassId = null;
+  assert.equal((await a.get('/api/auth/registration-context')).status, 503);
+  assert.equal((await register(a, 'ambiguous.student')).status, 503);
+  assert.equal(
+    await db('users').where({ username_normalized: 'ambiguous.student' }).first(),
+    undefined
+  );
+  await db('classes').where({ id: otherClass }).update({ active: false });
+  assert.equal((await register(a, 'single.class.student')).status, 201);
+  const registered = await db('users')
+    .where({ username_normalized: 'single.class.student' })
+    .first();
+  assert.equal(registered.school_id, school);
+  env.registrationClassId = otherClass;
+  assert.equal((await register(a, 'inactive.student')).status, 503);
+  env.registrationClassId = cls;
+  await db('classes').where({ id: cls }).update({ retention_end_at: '2020-01-01' });
+  assert.equal((await register(a, 'expired.student')).status, 503);
+  env.registrationClassId = randomUUID();
+  assert.equal((await register(a, 'missing.student')).status, 503);
+});
+
 test('pending -> atomic approval -> login with correct profile; double click is idempotent', async () => {
   const a = agent(),
     s = agent();
@@ -271,8 +338,8 @@ test('role boundaries, schools, class scoping, no admin private reflection acces
   assert.equal((await s.get('/api/teacher/classes/' + cls + '/summary')).status, 403);
   assert.equal((await b.get('/api/teacher/classes/' + otherClass + '/summary')).status, 404);
   assert.equal(
-    (await mutate(b, 'post', `/api/classes/${otherClass}/code`, { action: 'rotate' })).status,
-    404
+    (await mutate(b, 'patch', `/api/classes/${otherClass}`, { active: false })).status,
+    403
   );
   const list = await b.get('/api/classes');
   assert.deepEqual(
@@ -404,6 +471,33 @@ test('save reload, validation and revision conflict prevent other student writes
   input.data.comparison.criteria[0].weight = 0;
   assert.equal((await mutate(a, 'put', '/api/me/exploration', input)).status, 422);
 });
+test('incomplete plan, criterion and task drafts save without blocking other tools or consultation', async () => {
+  const a = agent();
+  await login(a, student.username_normalized);
+  const input = {
+    revision: 0,
+    instrumentVersion,
+    aggregateConsent: false,
+    data: emptyExploration(),
+  };
+  input.data.plan.status = 'chosen';
+  input.data.plan.tasks = [{ id: randomUUID(), title: '', due: '', done: false }];
+  input.data.comparison.criteria[0].name = '';
+  assert.equal((await mutate(a, 'put', '/api/me/exploration', input)).status, 200);
+  input.revision = 1;
+  input.data.answers.R1 = 4;
+  input.data.discussion.reason = 'Draf dari fitur lain';
+  assert.equal((await mutate(a, 'put', '/api/me/exploration', input)).status, 200);
+  const loaded = (await a.get('/api/me/exploration')).body.data;
+  assert.deepEqual(loaded.data, input.data);
+  assert.equal(loaded.revision, 2);
+  assert.equal((await consultation(a, { sections: ['plan'] })).status, 201);
+  input.revision = 2;
+  input.data.plan.main = 'Opsi sementara';
+  input.data.plan.backup = 'Opsi sementara';
+  assert.equal((await mutate(a, 'put', '/api/me/exploration', input)).status, 200);
+});
+
 async function consultation(a, overrides = {}, key = randomUUID(), token) {
   return mutate(
     a,

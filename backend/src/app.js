@@ -156,7 +156,7 @@ export function createApp(db, env) {
     (req, res, next) => {
       if (
         req.method === 'POST' &&
-        ['/login', '/register', '/class-context', '/status', '/password'].includes(req.path)
+        ['/login', '/register', '/status', '/password'].includes(req.path)
       )
         return authIpLimiter(req, res, next);
       next();

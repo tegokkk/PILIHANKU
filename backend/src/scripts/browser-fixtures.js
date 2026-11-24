@@ -1,6 +1,6 @@
 // Disposable synthetic identities for local manual/browser QA. Never production.
 import { randomUUID, randomBytes } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { readEnv } from '../config/env.js';
 import { createDatabase } from '../config/database.js';
 import { hashPassword } from '../modules/auth/auth.routes.js';
@@ -63,8 +63,7 @@ try {
     { mode: 0o600 }
   );
   console.log('Synthetic QA fixture credentials saved privately in .local/browser-fixtures.json.');
-  const demo = JSON.parse(await readFile('.local/demo-class.json', 'utf8'));
-  console.log(JSON.stringify({ classCode: demo.classCode, classId: cls.id }));
+  console.log(JSON.stringify({ classId: cls.id }));
 } finally {
   await db.destroy();
 }

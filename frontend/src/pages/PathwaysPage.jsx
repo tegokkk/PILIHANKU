@@ -100,6 +100,14 @@ export default function PathwaysPage() {
       setError('Maksimal tiga opsi. Hapus satu opsi sebelum menambah yang lain.');
       return;
     }
+    if (
+      data.comparison.options.some(
+        (o) => o.title.trim().toLowerCase() === card.title.trim().toLowerCase()
+      )
+    ) {
+      setError('Opsi dengan nama tersebut sudah dipilih. Hapus opsi lama sebelum menggantinya.');
+      return;
+    }
     update((d) => ({
       ...d,
       explored: card.category ? [...new Set([...d.explored, card.category])] : d.explored,

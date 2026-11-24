@@ -30,6 +30,12 @@ export function readEnv(source = process.env) {
     throw new Error('DATABASE_URL must use PostgreSQL.');
   if (production && !origin.startsWith('https://'))
     throw new Error('Production requires HTTPS APP_ORIGIN');
+  const registrationClassId = source.REGISTRATION_CLASS_ID || null;
+  if (
+    registrationClassId &&
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(registrationClassId)
+  )
+    throw new Error('REGISTRATION_CLASS_ID must be a class UUID.');
   return {
     production,
     requestLogs: source.LOG_REQUESTS === 'true' || (production && source.LOG_REQUESTS !== 'false'),
@@ -42,5 +48,6 @@ export function readEnv(source = process.env) {
     trustProxy,
     demo: source.DEMO_CONTENT === 'true' && !production,
     pendingDays,
+    registrationClassId,
   };
 }

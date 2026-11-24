@@ -1,6 +1,8 @@
 import { z, text, dateOnly } from '../../middleware/validate.js';
 import { categories, questions, instrumentVersion } from '../content/materials.js';
 const optionalText = text(500).optional().default('');
+// Autosave accepts incomplete drafts while a student edits labels and choices.
+// Completeness is shown in the UI; it must not block saving unrelated sections.
 const option = z
   .object({
     id: text(100).min(1),
@@ -58,7 +60,7 @@ export const explorationSchema = z
                 z
                   .object({
                     id: text(100).min(1),
-                    name: text(100).min(1),
+                    name: text(100),
                     weight: z.number().int().min(1).max(3).nullable(),
                     ratings: z.record(z.string(), z.number().int().min(1).max(4)),
                   })
@@ -94,7 +96,7 @@ export const explorationSchema = z
                 z
                   .object({
                     id: text(100),
-                    title: text(200).min(1),
+                    title: text(200),
                     due: dateOnly.or(z.literal('')),
                     done: z.boolean(),
                   })
@@ -104,9 +106,7 @@ export const explorationSchema = z
             support: optionalText,
             barriers: optionalText,
           })
-          .strict()
-          .refine((p) => !p.main || p.main !== p.backup, 'Utama dan cadangan harus berbeda')
-          .refine((p) => p.status !== 'chosen' || p.main.length > 0, 'Tentukan pilihan utama'),
+          .strict(),
         simulations: z.record(z.string(), text(500)),
         explored: z.array(z.enum(categories)).max(4),
       })

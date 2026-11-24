@@ -355,7 +355,6 @@ function Classes({ admin }) {
       academicYear: '2026/2027',
       retentionEnd: '',
     }),
-    [code, setCode] = useState(null),
     [creating, setCreating] = useState(false),
     [createExiting, triggerCreateExit, resetCreateExit] = useExitAction();
   return (
@@ -384,18 +383,6 @@ function Classes({ admin }) {
         loading={resource.loading}
         onChange={setPage}
       />
-      {code && (
-        <Notice type="success">
-          <div className="row between">
-            <span>
-              Kode baru (ditampilkan sekali): <strong>{code}</strong>
-            </span>
-            <AsyncButton variant="outline" action={() => navigator.clipboard.writeText(code)}>
-              Salin kode
-            </AsyncButton>
-          </div>
-        </Notice>
-      )}
       {creating && (
         <Panel as="div" exiting={createExiting} direction="up" className="sub-card stack">
           <h3>Kelas baru</h3>
@@ -455,10 +442,6 @@ function Classes({ admin }) {
                   {c.label} · {c.academic_year}
                 </h3>
                 <StatusBadge status={c.active ? 'Aktif' : 'Tidak aktif'} />
-                <StatusBadge
-                  status={c.code_active ? 'Aktif' : 'Tidak aktif'}
-                  label={c.code_active ? 'Kode aktif' : 'Kode nonaktif'}
-                />
               </div>
               <p className="caption">
                 Akhir retensi: {new Date(c.retention_end_at).toLocaleDateString('id-ID')} · Data
@@ -466,34 +449,6 @@ function Classes({ admin }) {
               </p>
             </div>
             <div className="action-row">
-              <AsyncButton
-                variant="outline"
-                action={async () =>
-                  setCode(
-                    (
-                      await api(`/classes/${c.id}/code`, {
-                        method: 'POST',
-                        body: { action: 'rotate' },
-                      })
-                    ).code
-                  )
-                }
-                onSuccess={resource.reload}
-              >
-                Rotasi kode
-              </AsyncButton>
-              <AsyncButton
-                variant="outline"
-                action={() =>
-                  api(`/classes/${c.id}/code`, { method: 'POST', body: { action: 'disable' } })
-                }
-                onSuccess={() => {
-                  setCode(null);
-                  resource.reload();
-                }}
-              >
-                Nonaktifkan kode
-              </AsyncButton>
               {admin && (
                 <AsyncButton
                   variant="outline"
@@ -509,7 +464,10 @@ function Classes({ admin }) {
           </article>
         ))
       ) : (
-        <EmptyState title="Belum ada kelas" description="Tambahkan kelas untuk mengelola kode." />
+        <EmptyState
+          title="Belum ada kelas"
+          description="Tambahkan kelas untuk membuka pendaftaran siswa."
+        />
       )}
     </section>
   );

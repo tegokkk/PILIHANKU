@@ -72,6 +72,11 @@ export default function ActionPlanPage() {
                 onChange={(e) => patch({ main: e.target.value })}
               />
             )}
+            {plan.status === 'chosen' && !plan.main.trim() && (
+              <Notice type="warning">
+                Isi pilihan utama saat sudah siap. Drafmu tetap disimpan selama belum lengkap.
+              </Notice>
+            )}
             <Field
               label="Pilihan cadangan (boleh belum ditentukan)"
               list="option-titles"

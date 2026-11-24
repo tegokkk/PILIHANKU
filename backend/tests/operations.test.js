@@ -180,6 +180,10 @@ test('environment typos fail closed before insecure development defaults can sta
   const valid = { DATABASE_URL: url, SESSION_SECRET: 'synthetic-environment-only-secret-12345' };
   assert.throws(() => readEnv({ ...valid, NODE_ENV: 'prod' }), /NODE_ENV/);
   assert.throws(
+    () => readEnv({ ...valid, REGISTRATION_CLASS_ID: 'invalid' }),
+    /REGISTRATION_CLASS_ID/
+  );
+  assert.throws(
     () => readEnv({ ...valid, NODE_ENV: 'production', APP_ORIGIN: 'http://localhost' }),
     /HTTPS/
   );
