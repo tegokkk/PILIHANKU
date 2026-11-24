@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/screenshots/beranda-2026-11-22.png" alt="Beranda PILIHANKU dengan navigasi membulat, latar topografi, dan hero hijau bertema pertumbuhan" width="100%" />
+  <img src="./screenshots/beranda-2026-11-22.png" alt="Beranda PILIHANKU dengan navigasi membulat, latar topografi, dan hero hijau bertema pertumbuhan" width="100%" />
 </p>
 
 <h1 align="center">PILIHANKU</h1>
@@ -12,9 +12,9 @@
 
 <p align="center">
   <a href="#menjalankan-lokal">Jalankan Lokal</a> ·
-  <a href="./docs/VERCEL-DEPLOY.md">Panduan Deploy</a> ·
-  <a href="./docs/LOGIN-ACCESS.md">Alur Akses Akun</a> ·
-  <a href="./docs/OPERASIONAL.md">Runbook Operator</a>
+  <a href="./VERCEL-DEPLOY.md">Panduan Deploy</a> ·
+  <a href="./LOGIN-ACCESS.md">Alur Akses Akun</a> ·
+  <a href="./OPERASIONAL.md">Runbook Operator</a>
 </p>
 
 <p align="center">
@@ -149,7 +149,7 @@ flowchart LR
     O[Operator backup dan restore] --> D
 ```
 
-**Akses saat ini:** beranda, Masuk, Daftar Siswa, pemeriksaan status dengan verifikasi kredensial, dan informasi privasi tersedia tanpa sesi. **Seluruh fitur aplikasi membutuhkan login akun approved.** Mode Tamu, impor draf tamu, konsultasi token tamu, serta ekspor tanpa sesi pada rancangan awal sudah dinonaktifkan. Rincian dan riwayat perubahan ada pada [LOGIN-ACCESS](docs/LOGIN-ACCESS.md).
+**Akses saat ini:** beranda, Masuk, Daftar Siswa, pemeriksaan status dengan verifikasi kredensial, dan informasi privasi tersedia tanpa sesi. **Seluruh fitur aplikasi membutuhkan login akun approved.** Mode Tamu, impor draf tamu, konsultasi token tamu, serta ekspor tanpa sesi pada rancangan awal sudah dinonaktifkan. Rincian dan riwayat perubahan ada pada [LOGIN-ACCESS](LOGIN-ACCESS.md).
 
 ## Susunan Proyek
 
@@ -185,17 +185,20 @@ PILIHANKU/
 |   `-- package.json
 |-- api/index.mjs                  # Adapter Express untuk konfigurasi serverless
 |-- deploy/nginx.conf.example      # Contoh reverse proxy
-|-- docs/                          # Panduan, laporan dan screenshot
+|-- docs/                          # Seluruh dokumentasi proyek
+|   |-- README.md                   # Panduan utama
+|   |-- PRD.md
+|   |-- design.md
+|   |-- structure.md
+|   |-- TASKLIST.md
+|   |-- TEST-FLOWS.md               # Catatan alur pengujian browser
+|   |-- screenshots/
+|   `-- ...                        # Panduan dan laporan pendukung
 |-- Dockerfile
-|-- vercel.json
-|-- PRD.md
-|-- design.md
-|-- structure.md
-|-- TASKLIST.md
-`-- README.md
+`-- vercel.json                    # Konfigurasi deployment
 ```
 
-Sumber UI Stitch tersedia pada workspace lokal di `stitch_pilihanku_career_platform_ui/` dan diabaikan oleh Git. Folder `.local/`, `.env`, `tmp/`, dan `output/` juga tidak dipublikasikan. Screenshot README disimpan tersendiri di `docs/screenshots/`.
+Sumber UI Stitch tersedia pada workspace lokal di `stitch_pilihanku_career_platform_ui/` dan diabaikan oleh Git. Folder `.local/`, `.env`, `tmp/`, dan `output/` juga tidak dipublikasikan. Screenshot panduan utama disimpan tersendiri di `docs/screenshots/`.
 
 ## Menjalankan Lokal
 
@@ -286,7 +289,7 @@ Simpan hasilnya sebagai `SESSION_SECRET`, kemudian jalankan migration, bootstrap
 
 ## Konfigurasi Environment
 
-Konfigurasi aplikasi berada di `backend/.env`. Frontend tidak memerlukan rahasia dan menggunakan `/api` pada origin yang sama. Lihat [contoh backend](backend/.env.example) dan [contoh frontend](frontend/.env.example).
+Konfigurasi aplikasi berada di `backend/.env`. Frontend tidak memerlukan rahasia dan menggunakan `/api` pada origin yang sama. Lihat [contoh backend](../backend/.env.example) dan [contoh frontend](../frontend/.env.example).
 
 | Variabel | Penggunaan |
 | --- | --- |
@@ -368,7 +371,7 @@ Pada `npm run preview`, sesuaikan `APP_ORIGIN` backend jika menguji sesi melalui
 - **Konten dan cache:** draf tidak masuk katalog; opsi menyimpan versi. Respons API memakai `no-store`, service worker hanya menyimpan shell/aset publik. Shell luring tidak membuka fitur privat tanpa verifikasi sesi.
 - **Penghapusan:** siswa approved dapat menghapus data aktif miliknya melalui Pengaturan Data, tanpa persetujuan guru. Penghapusan pendaftaran yang belum aktif ditangani melalui petugas sekolah dengan verifikasi pemilik.
 
-Retensi mengikuti akhir tahun ajaran yang dikonfigurasi serta kebijakan pengajuan. Akses jatuh tempo ditolak meskipun job belum berjalan. Prosedur ledger, retensi audit, backup terenkripsi, dan pemulihan ada pada [runbook operasional](docs/OPERASIONAL.md).
+Retensi mengikuti akhir tahun ajaran yang dikonfigurasi serta kebijakan pengajuan. Akses jatuh tempo ditolak meskipun job belum berjalan. Prosedur ledger, retensi audit, backup terenkripsi, dan pemulihan ada pada [runbook operasional](OPERASIONAL.md).
 
 ## Deployment dan Pemeliharaan
 
@@ -376,8 +379,8 @@ Repository menyediakan dua jalur konfigurasi:
 
 | Jalur | Berkas/panduan | Catatan |
 | --- | --- | --- |
-| Node.js / container dengan reverse proxy | [Dockerfile](Dockerfile), [contoh Nginx](deploy/nginx.conf.example) | Express produksi menyajikan `frontend/dist/` dan `/api` pada satu origin |
-| Adapter serverless dan frontend statis | [vercel.json](vercel.json), [api/index.mjs](api/index.mjs), [panduan deploy manual](docs/VERCEL-DEPLOY.md) | Gunakan konfigurasi root repository; job pemeliharaan tetap perlu penjadwal yang sesuai |
+| Node.js / container dengan reverse proxy | [Dockerfile](../Dockerfile), [contoh Nginx](../deploy/nginx.conf.example) | Express produksi menyajikan `frontend/dist/` dan `/api` pada satu origin |
+| Adapter serverless dan frontend statis | [vercel.json](../vercel.json), [api/index.mjs](../api/index.mjs), [panduan deploy manual](VERCEL-DEPLOY.md) | Gunakan konfigurasi root repository; job pemeliharaan tetap perlu penjadwal yang sesuai |
 
 Konfigurasi di repository bukan bukti deployment sudah berlangsung. Tidak ada URL demo produksi yang diasumsikan aktif di README ini.
 
@@ -392,7 +395,7 @@ Urutan persiapan:
 
 Runtime production menolak `DEMO_CONTENT=true`, sekolah demo, kredensial bootstrap yang masih terpasang, serta schema yang belum lengkap. Jangan menjalankan seed atau fixture QA pada database sekolah.
 
-Health tersedia pada `/api/health/live` untuk proses dan `/api/health` untuk database/tabel sesi/limiter. Metadata operasi tersedia pada `/api/admin/operations` khusus superadmin. Pemantauan, worker, backup harian, restore terisolasi, dan rekonsiliasi perubahan akses dijelaskan di [OPERASIONAL.md](docs/OPERASIONAL.md).
+Health tersedia pada `/api/health/live` untuk proses dan `/api/health` untuk database/tabel sesi/limiter. Metadata operasi tersedia pada `/api/admin/operations` khusus superadmin. Pemantauan, worker, backup harian, restore terisolasi, dan rekonsiliasi perubahan akses dijelaskan di [OPERASIONAL.md](OPERASIONAL.md).
 
 Sebelum membuka trafik dari hasil pemulihan, terapkan ledger penghapusan terbaru, retensi, serta rekonsiliasi reset/suspend sejak snapshot. Cadangan harus mempunyai masa simpan sesuai kebijakan, dengan target maksimal 30 hari pada rancangan produk. Contoh Docker/proxy dan integrasi hosting perlu diuji pada lingkungan tujuan; jangan menyamakan pengujian lokal dengan verifikasi hosting.
 
@@ -408,9 +411,9 @@ Sebelum membuka trafik dari hasil pemulihan, terapkan ledger penghapusan terbaru
 
 **Catatan pembaruan 22 November 2026:** akses fitur diwajibkan login approved; beranda pengenalan tetap publik. Migration `005_rate_limits` pada development lokal sudah ditangani dalam pekerjaan sebelumnya untuk memperbaiki error `/api/auth/me`; instalasi lain tetap harus menjalankan `npm run migrate`. Riwayat remediasi mencakup pembatasan request PostgreSQL, retensi/ledger, backup/restore, dan pemeriksaan tampilan/aksesibilitas/PDF pada cakupan yang dicatat.
 
-Untuk hasil dan bukti yang tepat, baca [akses login](docs/LOGIN-ACCESS.md), [hasil remediasi](docs/REMEDIATION-2026-11-22.md), [audit awal](docs/PRODUCTION-AUDIT-2026-11-22.md), dan [verifikasi implementasi](docs/VERIFICATION.md). Catatan pengujian lama yang memakai Mode Tamu bersifat historis; gunakan aturan akses terbaru.
+Untuk hasil dan bukti yang tepat, baca [akses login](LOGIN-ACCESS.md), [hasil remediasi](REMEDIATION-2026-11-22.md), [audit awal](PRODUCTION-AUDIT-2026-11-22.md), dan [verifikasi implementasi](VERIFICATION.md). Catatan pengujian lama yang memakai Mode Tamu bersifat historis; gunakan aturan akses terbaru.
 
-Belum ada klaim bahwa telaah ahli, sumber konten resmi, persetujuan sekolah/wali, SUS, kapasitas hosting, atau efektivitas keputusan karier sudah lulus hanya karena kode dan tampilan tersedia. Form pencatatannya disiapkan pada [VALIDASI-SEKOLAH.md](docs/VALIDASI-SEKOLAH.md).
+Belum ada klaim bahwa telaah ahli, sumber konten resmi, persetujuan sekolah/wali, SUS, kapasitas hosting, atau efektivitas keputusan karier sudah lulus hanya karena kode dan tampilan tersedia. Form pencatatannya disiapkan pada [VALIDASI-SEKOLAH.md](VALIDASI-SEKOLAH.md).
 
 ## Dokumen Pendukung
 
@@ -420,13 +423,13 @@ Belum ada klaim bahwa telaah ahli, sumber konten resmi, persetujuan sekolah/wali
 | [design.md](design.md) | Sistem visual, delapan layout dan referensi UI |
 | [structure.md](structure.md) | Stack, modul, struktur frontend/backend, serta kontrak akun |
 | [TASKLIST.md](TASKLIST.md) | Pekerjaan dan status implementasi; perhatikan catatan perubahan akses terbaru |
-| [LOGIN-ACCESS.md](docs/LOGIN-ACCESS.md) | Gerbang sesi, role, logout, ekspor dan cakupan akses publik |
-| [VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md) | Konfigurasi deploy manual adapter yang tersedia |
-| [OPERASIONAL.md](docs/OPERASIONAL.md) | Health, worker, log, backup/restore, ledger dan pemulihan |
-| [ASSETS.md](docs/ASSETS.md) | Sumber aset dan catatan hak penggunaan |
-| [VALIDASI-SEKOLAH.md](docs/VALIDASI-SEKOLAH.md) | Materi/protokol dan lembar keputusan ahli/sekolah |
-| [REMEDIATION-2026-11-22.md](docs/REMEDIATION-2026-11-22.md) | Hasil perbaikan teknis, verifikasi dan pekerjaan eksternal yang tersisa |
-| [VERIFICATION.md](docs/VERIFICATION.md) | Jejak pengujian implementasi beserta batasnya |
+| [LOGIN-ACCESS.md](LOGIN-ACCESS.md) | Gerbang sesi, role, logout, ekspor dan cakupan akses publik |
+| [VERCEL-DEPLOY.md](VERCEL-DEPLOY.md) | Konfigurasi deploy manual adapter yang tersedia |
+| [OPERASIONAL.md](OPERASIONAL.md) | Health, worker, log, backup/restore, ledger dan pemulihan |
+| [ASSETS.md](ASSETS.md) | Sumber aset dan catatan hak penggunaan |
+| [VALIDASI-SEKOLAH.md](VALIDASI-SEKOLAH.md) | Materi/protokol dan lembar keputusan ahli/sekolah |
+| [REMEDIATION-2026-11-22.md](REMEDIATION-2026-11-22.md) | Hasil perbaikan teknis, verifikasi dan pekerjaan eksternal yang tersisa |
+| [VERIFICATION.md](VERIFICATION.md) | Jejak pengujian implementasi beserta batasnya |
 
 ---
 

@@ -1,6 +1,6 @@
 # TASKLIST Pengerjaan PILIHANKU
 
-> **Perubahan akses, 22 November 2026:** instruksi pengguna terbaru mewajibkan login approved untuk seluruh fitur. Ketentuan Mode Tamu, eksplorasi publik, transfer draf tamu, konsultasi token tamu dan ekspor tanpa sesi pada rincian lama di bawah dinyatakan digantikan. Implementasi dan bukti pengujian terbaru: [LOGIN-ACCESS](docs/LOGIN-ACCESS.md).
+> **Perubahan akses, 22 November 2026:** instruksi pengguna terbaru mewajibkan login approved untuk seluruh fitur. Ketentuan Mode Tamu, eksplorasi publik, transfer draf tamu, konsultasi token tamu dan ekspor tanpa sesi pada rincian lama di bawah dinyatakan digantikan. Implementasi dan bukti pengujian terbaru: [LOGIN-ACCESS](LOGIN-ACCESS.md).
 
 - [x] Gerbang sesi sebelum delapan layout/panel/animasi; URL langsung ke Masuk.
 - [x] API fitur wajib sesi approved; 401 anonim dan 403 role salah; lingkup milik siswa/penugasan BK/administrasi server.
@@ -47,14 +47,14 @@ Belum ditemukan `package.json`, aplikasi React, atau implementasi backend dalam 
 
 | Layout                  | Sumber desktop                                                                                         | Sumber mobile                                                                                       | Hasil React target      |
 | ----------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------- |
-| L01 Beranda             | [HTML desktop](./stitch_pilihanku_career_platform_ui/l01_beranda_desktop_1440px/code.html)             | [HTML mobile](./stitch_pilihanku_career_platform_ui/l01_beranda_mobile_390px/code.html)             | `HomePage.jsx`          |
-| L02 Mulai               | [HTML desktop](./stitch_pilihanku_career_platform_ui/l02_mulai_desktop_1440px/code.html)               | [HTML mobile](./stitch_pilihanku_career_platform_ui/l02_mulai_mobile_390px/code.html)               | `StartPage.jsx`         |
-| L03 Kenali Diriku       | [HTML desktop](./stitch_pilihanku_career_platform_ui/l03_kenali_diriku_desktop_1440px/code.html)       | [HTML mobile](./stitch_pilihanku_career_platform_ui/l03_kenali_diriku_mobile_390px/code.html)       | `SelfDiscoveryPage.jsx` |
-| L04 Peta Jalur          | [HTML desktop](./stitch_pilihanku_career_platform_ui/l04_peta_jalur_desktop_1440px/code.html)          | [HTML mobile](./stitch_pilihanku_career_platform_ui/l04_peta_jalur_mobile_390px/code.html)          | `PathwaysPage.jsx`      |
-| L05 Timbang Pilihan     | [HTML desktop](./stitch_pilihanku_career_platform_ui/l05_timbang_pilihan_desktop_1440px/code.html)     | [HTML mobile](./stitch_pilihanku_career_platform_ui/l05_timbang_pilihan_mobile_390px/code.html)     | `ComparisonPage.jsx`    |
-| L06 Rencana Langkahku   | [HTML desktop](./stitch_pilihanku_career_platform_ui/l06_rencana_langkahku_desktop_1440px/code.html)   | [HTML mobile](./stitch_pilihanku_career_platform_ui/l06_rencana_langkahku_mobile_390px/code.html)   | `ActionPlanPage.jsx`    |
-| L07 Dashboard Pengelola | [HTML desktop](./stitch_pilihanku_career_platform_ui/l07_dashboard_pengelola_desktop_1440px/code.html) | [HTML mobile](./stitch_pilihanku_career_platform_ui/l07_dashboard_pengelola_mobile_390px/code.html) | `DashboardPage.jsx`     |
-| L08 Kelola Informasi    | [HTML desktop](./stitch_pilihanku_career_platform_ui/l08_kelola_informasi_desktop_1440px/code.html)    | [HTML mobile](./stitch_pilihanku_career_platform_ui/l08_kelola_informasi_mobile_390px/code.html)    | `ManagementPage.jsx`    |
+| L01 Beranda             | [HTML desktop](../stitch_pilihanku_career_platform_ui/l01_beranda_desktop_1440px/code.html)             | [HTML mobile](../stitch_pilihanku_career_platform_ui/l01_beranda_mobile_390px/code.html)             | `HomePage.jsx`          |
+| L02 Mulai               | [HTML desktop](../stitch_pilihanku_career_platform_ui/l02_mulai_desktop_1440px/code.html)               | [HTML mobile](../stitch_pilihanku_career_platform_ui/l02_mulai_mobile_390px/code.html)               | `StartPage.jsx`         |
+| L03 Kenali Diriku       | [HTML desktop](../stitch_pilihanku_career_platform_ui/l03_kenali_diriku_desktop_1440px/code.html)       | [HTML mobile](../stitch_pilihanku_career_platform_ui/l03_kenali_diriku_mobile_390px/code.html)       | `SelfDiscoveryPage.jsx` |
+| L04 Peta Jalur          | [HTML desktop](../stitch_pilihanku_career_platform_ui/l04_peta_jalur_desktop_1440px/code.html)          | [HTML mobile](../stitch_pilihanku_career_platform_ui/l04_peta_jalur_mobile_390px/code.html)          | `PathwaysPage.jsx`      |
+| L05 Timbang Pilihan     | [HTML desktop](../stitch_pilihanku_career_platform_ui/l05_timbang_pilihan_desktop_1440px/code.html)     | [HTML mobile](../stitch_pilihanku_career_platform_ui/l05_timbang_pilihan_mobile_390px/code.html)     | `ComparisonPage.jsx`    |
+| L06 Rencana Langkahku   | [HTML desktop](../stitch_pilihanku_career_platform_ui/l06_rencana_langkahku_desktop_1440px/code.html)   | [HTML mobile](../stitch_pilihanku_career_platform_ui/l06_rencana_langkahku_mobile_390px/code.html)   | `ActionPlanPage.jsx`    |
+| L07 Dashboard Pengelola | [HTML desktop](../stitch_pilihanku_career_platform_ui/l07_dashboard_pengelola_desktop_1440px/code.html) | [HTML mobile](../stitch_pilihanku_career_platform_ui/l07_dashboard_pengelola_mobile_390px/code.html) | `DashboardPage.jsx`     |
+| L08 Kelola Informasi    | [HTML desktop](../stitch_pilihanku_career_platform_ui/l08_kelola_informasi_desktop_1440px/code.html)    | [HTML mobile](../stitch_pilihanku_career_platform_ui/l08_kelola_informasi_mobile_390px/code.html)    | `ManagementPage.jsx`    |
 
 ### 2.2 Temuan konkret yang harus ditangani
 

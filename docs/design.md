@@ -5,7 +5,7 @@
 | Versi | 1.2 - tiga role dan approval siswa |
 | Tanggal | 21 November 2026 |
 | Acuan produk | [PRD.md](./PRD.md), versi 1.2 - JavaScript/React, tiga role dan approval siswa |
-| Acuan visual | [Referensi 01](./assets/design/reference-01.png), gambar yang diberikan pengguna |
+| Acuan visual | [Referensi 01](../assets/design/reference-01.png), gambar yang diberikan pengguna |
 | Tujuan | Pedoman visual, spesifikasi layar, dan kumpulan prompt untuk generasi UI di Stitch |
 | Cakupan | Website siswa serta dashboard BK/superadmin berbasis role |
 | Acuan implementasi | [structure.md](./structure.md), JavaScript/React, backend Express/PostgreSQL |

@@ -55,7 +55,7 @@ Screenshot beranda desktop/mobile diperiksa terhadap arah visual botani, warna, 
 - `backend/tests/integration.test.js`: auth, approval bersamaan, transaksi/idempotensi, peran/sekolah/kelas, kepemilikan, revisi, perhitungan, konsultasi, sharing, agregat, konten, laporan sumber, snapshot dan hapus.
 - `backend/tests/operations.test.js`: kalender, usia sesi, Unicode CSRF, rate limit aktual, ledger penghapusan, serta rollback/rebuild migration.
 - `frontend/tests/domain.test.js`: materi offline/server sama, skor, matriks, kedaluwarsa, cakupan ekspor, PDF panjang, penyimpanan bersama serta error unavailable/quota.
-- `frontend/tests/flows/README.md`: langkah browser aktual untuk pengulangan.
+- [docs/TEST-FLOWS.md](TEST-FLOWS.md): langkah browser aktual untuk pengulangan.
 - `output/qa/database-evidence.json`: hasil SQL akun browser utama; tidak menyertakan password, ID sesi, atau token.
 - `output/qa/browser-plan.pdf` dan `long-plan.pdf`, serta PNG render: bukti ekspor sintetis.
 - `output/qa/source-checksums.json`: inventaris checksum 16 HTML sumber yang dipertahankan.

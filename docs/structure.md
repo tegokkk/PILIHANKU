@@ -186,17 +186,21 @@ PILIHANKU/
 |   |   |   `-- print.css
 |   |   |-- utils/                     # Perhitungan UI, format tanggal
 |   |   `-- assets/                    # Aset produk yang memang digunakan
-|   |-- tests/
-|   |   `-- flows/                     # Alur browser saat aplikasi tersedia
+|   |-- tests/                        # Pengujian frontend; catatan browser ada di docs/TEST-FLOWS.md
 |   |-- index.html
 |   |-- vite.config.js
 |   |-- .env.example
 |   |-- package.json
 |   `-- package-lock.json
 |
-|-- PRD.md
-|-- design.md
-|-- structure.md
+|-- docs/                            # Seluruh dokumentasi proyek
+|   |-- README.md
+|   |-- PRD.md
+|   |-- design.md
+|   |-- structure.md
+|   |-- TASKLIST.md
+|   |-- TEST-FLOWS.md
+|   `-- ...                          # Panduan dan laporan pendukung
 |-- assets/design/                     # Referensi desain yang sudah tersedia
 `-- .gitignore
 ```
