@@ -35,10 +35,10 @@ async function registrationClass(db, env) {
       if (env.registrationClassId) q.where('id', env.registrationClassId);
     })
     .orderBy('id')
-    .limit(2)
     .forShare();
+  const distinctSchools = new Set(candidates.map((c) => c.school_id));
   fail(
-    candidates.length === 1,
+    candidates.length > 0 && distinctSchools.size === 1,
     503,
     'REGISTRATION_UNAVAILABLE',
     'Pendaftaran belum tersedia. Hubungi pengelola untuk mengaktifkan pendaftaran.'

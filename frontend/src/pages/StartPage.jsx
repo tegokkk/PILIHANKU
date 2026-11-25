@@ -236,11 +236,6 @@ export default function StartPage() {
                         onChange={(e) => set('confirmation', e.target.value)}
                       />
                       <Notice type="error">{registration.error}</Notice>
-                      {registration.error && (
-                        <Button type="button" variant="outline" onClick={registration.reload}>
-                          Coba lagi
-                        </Button>
-                      )}
                       <Check
                         label="Saya menyetujui penyimpanan data pendaftaran akun"
                         required
