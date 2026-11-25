@@ -28,7 +28,7 @@ async function verify(db, input) {
   return user;
 }
 async function registrationClass(db, env) {
-  const candidates = await db('classes')
+  let candidates = await db('classes')
     .where({ active: true })
     .where('retention_end_at', '>', new Date())
     .modify((q) => {
@@ -36,6 +36,28 @@ async function registrationClass(db, env) {
     })
     .orderBy('id')
     .forShare();
+  if (candidates.length === 0 && !env.registrationClassId) {
+    const anyClass = await db('classes').first('id');
+    if (!anyClass) {
+      const schools = await db('schools').select('id').limit(2);
+      if (schools.length === 1) {
+        const now = new Date();
+        const year = now.getUTCFullYear();
+        const retentionEnd = new Date(now.getTime() + 365 * 86400000);
+        const created = {
+          id: randomUUID(),
+          school_id: schools[0].id,
+          label: 'Umum',
+          grade: 'XII',
+          academic_year: `${year}/${year + 1}`,
+          retention_end_at: retentionEnd,
+          active: true,
+        };
+        await db('classes').insert(created);
+        candidates = [created];
+      }
+    }
+  }
   const distinctSchools = new Set(candidates.map((c) => c.school_id));
   fail(
     candidates.length > 0 && distinctSchools.size === 1,
